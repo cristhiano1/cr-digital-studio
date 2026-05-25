@@ -30,7 +30,7 @@ export default function Hero() {
             <motion.div {...fadeUp(0.2)}>
               <span className="inline-flex items-center gap-2 text-white/55 text-sm tracking-widest uppercase mb-7 font-medium">
                 <span className="w-4 h-px bg-white/40" />
-                Sweden-based digital studio
+                Remote-first digital studio
               </span>
             </motion.div>
 

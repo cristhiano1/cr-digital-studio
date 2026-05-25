@@ -27,11 +27,11 @@ export default function Footer() {
               <span className="text-white font-semibold text-sm">CR Digital Studio</span>
             </a>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs mb-4">
-              CR Digital Studio is led by Cristhian Rodriguez, an Azure Cloud Developer focused on full-stack systems, automation and cloud-ready business software.
+              CR Digital Studio is led by Cristhian Rodriguez, an Azure Cloud Developer building full-stack, cloud-ready business systems for clients globally.
             </p>
-            <p className="text-white/55 text-xs flex items-center gap-1.5">
-              <span className="text-base" aria-hidden="true">🇸🇪</span>
-              Sweden-based
+            <p className="text-white/40 text-xs flex items-center gap-1.5">
+              <span className="text-base" aria-hidden="true">🌐</span>
+              Remote-first &middot; Global clients
             </p>
           </div>
 

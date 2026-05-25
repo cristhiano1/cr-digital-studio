@@ -1,136 +1,78 @@
-import type { Handler, HandlerEvent } from '@netlify/functions'
+import { createClient } from '@supabase/supabase-js'
 
-// TODO: Install @netlify/functions when deploying:
-//   npm install @netlify/functions --save-dev
-// TODO: Replace placeholder logic with real Supabase and Resend calls
-//   using environment variables configured in Netlify dashboard.
+// ─── Inline handler types — avoids requiring @netlify/functions package ───────
 
-interface LeadData {
-  name: string
-  email: string
+interface NetlifyEvent {
+  httpMethod: string
+  body: string | null
+  headers: Record<string, string | undefined>
+}
+
+interface NetlifyResponse {
+  statusCode: number
+  headers: Record<string, string>
+  body: string
+}
+
+type Handler = (event: NetlifyEvent) => Promise<NetlifyResponse>
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface ContactPayload {
+  name?: string
+  email?: string
   businessType?: string
   serviceInterest?: string
-  message: string
-  consent: boolean
+  message?: string
+  consent?: boolean
   turnstileToken?: string
 }
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
-async function verifyTurnstile(token: string): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY
-  if (!secret) {
-    // In development, skip verification if no key is configured
-    console.warn('TURNSTILE_SECRET_KEY not set — skipping verification')
-    return true
-  }
-  const response = await fetch(
-    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret, response: token }),
-    }
-  )
-  const data = (await response.json()) as { success: boolean }
-  return data.success
-}
-
-async function saveToSupabase(lead: LeadData): Promise<void> {
-  const url = process.env.SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!url || !key) {
-    // TODO: Wire up Supabase once environment variables are set in Netlify
-    console.warn('Supabase credentials not configured — lead not persisted')
-    return
-  }
-
-  const response = await fetch(`${url}/rest/v1/leads`, {
+async function verifyTurnstile(token: string, secret: string): Promise<boolean> {
+  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
-    headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
-    },
-    body: JSON.stringify({
-      name: lead.name,
-      email: lead.email,
-      business_type: lead.businessType ?? null,
-      service_interest: lead.serviceInterest ?? null,
-      message: lead.message,
-      status: 'new',
-      source: 'website-contact-form',
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret, response: token }),
   })
-
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(`Supabase insert failed: ${text}`)
-  }
+  const data = (await res.json()) as { success: boolean }
+  return data.success === true
 }
 
-async function sendEmailNotification(lead: LeadData): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY
-  const toEmail = process.env.CONTACT_EMAIL
+// ─── Handler ──────────────────────────────────────────────────────────────────
 
-  if (!apiKey || !toEmail) {
-    // TODO: Wire up Resend once environment variables are set in Netlify
-    console.warn('Resend credentials not configured — notification not sent')
-    return
-  }
-
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: 'CR Digital Studio <noreply@crdigitalstudio.com>',
-      to: [toEmail],
-      subject: `New contact form lead: ${lead.name}`,
-      html: `
-        <h2>New lead from CR Digital Studio</h2>
-        <p><strong>Name:</strong> ${lead.name}</p>
-        <p><strong>Email:</strong> ${lead.email}</p>
-        <p><strong>Business type:</strong> ${lead.businessType ?? '—'}</p>
-        <p><strong>Service interest:</strong> ${lead.serviceInterest ?? '—'}</p>
-        <hr />
-        <p><strong>Message:</strong></p>
-        <p>${lead.message.replace(/\n/g, '<br />')}</p>
-      `,
-    }),
-  })
-
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(`Resend send failed: ${text}`)
-  }
-}
-
-export const handler: Handler = async (event: HandlerEvent) => {
-  const headers = {
+export const handler: Handler = async (event) => {
+  const headers: Record<string, string> = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json',
   }
 
+  // CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers, body: '' }
   }
 
-  // 1. Check if the backend is configured. If missing, return 503 with the requested fallback message.
-  const isConfigured =
-    process.env.SUPABASE_URL &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY &&
-    process.env.RESEND_API_KEY &&
-    process.env.CONTACT_EMAIL
+  // Method guard
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ message: 'Method not allowed.' }),
+    }
+  }
 
-  if (!isConfigured) {
+  // ── 1. Check required server-side environment variables ───────────────────
+  const supabaseUrl = process.env.SUPABASE_URL
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('[contact] Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
     return {
       statusCode: 503,
       headers,
@@ -141,61 +83,63 @@ export const handler: Handler = async (event: HandlerEvent) => {
     }
   }
 
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ message: 'Method not allowed' }),
-    }
-  }
-
-  let body: LeadData
+  // ── 2. Parse request body ─────────────────────────────────────────────────
+  let payload: ContactPayload
   try {
-    body = JSON.parse(event.body ?? '{}') as LeadData
+    payload = JSON.parse(event.body ?? '{}') as ContactPayload
   } catch {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ message: 'Invalid request body' }),
+      body: JSON.stringify({ message: 'Invalid request body.' }),
     }
   }
 
-  // Validate required fields
-  if (!body.name?.trim() || !body.email?.trim() || !body.message?.trim()) {
+  // ── 3. Validate fields ────────────────────────────────────────────────────
+  const name    = payload.name?.trim() ?? ''
+  const email   = payload.email?.trim() ?? ''
+  const message = payload.message?.trim() ?? ''
+
+  if (name.length < 2) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ message: 'Name, email and message are required.' }),
+      body: JSON.stringify({ message: 'Please enter your name (at least 2 characters).' }),
     }
   }
-
-  if (!isValidEmail(body.email)) {
+  if (!isValidEmail(email)) {
     return {
       statusCode: 400,
       headers,
       body: JSON.stringify({ message: 'Please provide a valid email address.' }),
     }
   }
-
-  if (!body.consent) {
+  if (message.length < 10) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ message: 'Consent is required.' }),
+      body: JSON.stringify({ message: 'Your message must be at least 10 characters.' }),
+    }
+  }
+  if (payload.consent !== true) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ message: 'Please accept the consent checkbox before submitting.' }),
     }
   }
 
-  // 2. Enforce Turnstile token if the secret key is configured in the environment variables
+  // ── 4. Turnstile — only enforced when secret key is configured ────────────
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
   if (turnstileSecret) {
-    if (!body.turnstileToken) {
+    if (!payload.turnstileToken) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ message: 'Anti-spam token is required.' }),
+        body: JSON.stringify({ message: 'Anti-spam verification is required.' }),
       }
     }
-    const valid = await verifyTurnstile(body.turnstileToken)
+    const valid = await verifyTurnstile(payload.turnstileToken, turnstileSecret)
     if (!valid) {
       return {
         statusCode: 400,
@@ -205,25 +149,49 @@ export const handler: Handler = async (event: HandlerEvent) => {
     }
   }
 
+  // ── 5. Insert into Supabase ───────────────────────────────────────────────
   try {
-    await saveToSupabase(body)
-    await sendEmailNotification(body)
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    const { error } = await supabase.from('contact_messages').insert({
+      name,
+      email,
+      business_type:    payload.businessType?.trim()    || null,
+      service_interest: payload.serviceInterest?.trim() || null,
+      message,
+      consent:          true,
+      source:           'cr-digital-studio',
+    })
+
+    if (error) {
+      // Log the full error server-side only — never expose it to the caller
+      console.error('[contact] Supabase insert error:', error)
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message:
+            'Something went wrong saving your message. Please try again or reach out through LinkedIn.',
+        }),
+      }
+    }
 
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        message:
-          "Thank you! We've received your message and will get back to you within 1–2 business days.",
+        success: true,
+        message: "Thank you! We've received your message and will review it soon.",
       }),
     }
   } catch (err) {
-    console.error('Contact form error:', err)
+    console.error('[contact] Unexpected error:', err)
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
-        message: 'Something went wrong on our end. Please email directly.',
+        message:
+          'Something went wrong on our end. Please try again or reach out through LinkedIn.',
       }),
     }
   }
