@@ -78,7 +78,7 @@ export const handler: Handler = async (event) => {
       headers,
       body: JSON.stringify({
         message:
-          'The contact system is currently being configured. Please contact Cristhian Rodriguez through LinkedIn for now.',
+          'The contact system is currently in demonstration mode. We would love to discuss your project — please connect directly with Cristhian Rodriguez on LinkedIn to get started.',
       }),
     }
   }
