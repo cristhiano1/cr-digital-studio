@@ -1,5 +1,3 @@
-import { createClient } from '@supabase/supabase-js'
-
 // ─── Inline handler types — avoids requiring @netlify/functions package ───────
 
 interface NetlifyEvent {
@@ -149,23 +147,35 @@ export const handler: Handler = async (event) => {
     }
   }
 
-  // ── 5. Insert into Supabase ───────────────────────────────────────────────
+  // ── 5. Insert into Supabase via REST API (plain fetch — no WebSocket) ─────
   try {
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    // Normalize URL: remove trailing slashes and any accidental /rest/v1 suffix
+    const baseUrl  = supabaseUrl.replace(/\/+$/, '').replace(/\/rest\/v1$/, '')
+    const endpoint = `${baseUrl}/rest/v1/contact_messages`
 
-    const { error } = await supabase.from('contact_messages').insert({
-      name,
-      email,
-      business_type:    payload.businessType?.trim()    || null,
-      service_interest: payload.serviceInterest?.trim() || null,
-      message,
-      consent:          true,
-      source:           'cr-digital-studio',
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        apikey:          supabaseKey,
+        Authorization:   `Bearer ${supabaseKey}`,
+        'Content-Type':  'application/json',
+        Prefer:          'return=minimal',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        business_type:    payload.businessType?.trim()    || null,
+        service_interest: payload.serviceInterest?.trim() || null,
+        message,
+        consent:          true,
+        source:           'cr-digital-studio',
+      }),
     })
 
-    if (error) {
-      // Log the full error server-side only — never expose it to the caller
-      console.error('[contact] Supabase insert error:', error)
+    if (!res.ok) {
+      // Log full details server-side only — never expose them to the caller
+      const text = await res.text()
+      console.error('[contact] Supabase REST insert failed:', res.status, text)
       return {
         statusCode: 500,
         headers,
