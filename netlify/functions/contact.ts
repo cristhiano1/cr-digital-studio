@@ -20,7 +20,9 @@ interface ContactPayload {
   name?: string
   email?: string
   businessType?: string
+  business_type?: string // Fail-safe fallback mapping
   serviceInterest?: string
+  service_interest?: string // Fail-safe fallback mapping
   message?: string
   consent?: boolean
   turnstileToken?: string
@@ -94,9 +96,12 @@ export const handler: Handler = async (event) => {
   }
 
   // ── 3. Validate fields ────────────────────────────────────────────────────
-  const name    = payload.name?.trim() ?? ''
-  const email   = payload.email?.trim() ?? ''
-  const message = payload.message?.trim() ?? ''
+  const name            = payload.name?.trim()            ?? ''
+  const email           = payload.email?.trim()           ?? ''
+  const message         = payload.message?.trim()         ?? ''
+  // Optional fields — empty string is normalised to null for the DB column
+  const businessType    = (payload.businessType || payload.business_type)?.trim()    || null
+  const serviceInterest = (payload.serviceInterest || payload.service_interest)?.trim() || null
 
   if (name.length < 2) {
     return {
@@ -164,8 +169,8 @@ export const handler: Handler = async (event) => {
       body: JSON.stringify({
         name,
         email,
-        business_type:    payload.businessType?.trim()    || null,
-        service_interest: payload.serviceInterest?.trim() || null,
+        business_type:    businessType,
+        service_interest: serviceInterest,
         message,
         consent:          true,
         source:           'cr-digital-studio',

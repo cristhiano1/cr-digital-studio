@@ -17,10 +17,22 @@ export async function submitContactForm(
   data: ContactFormData
 ): Promise<ContactResponse> {
   try {
+    const payload = {
+      name: data.name,
+      email: data.email,
+      businessType: data.businessType,
+      business_type: data.businessType, // Map both to prevent any backend casing mismatches
+      serviceInterest: data.serviceInterest,
+      service_interest: data.serviceInterest, // Map both to prevent any backend casing mismatches
+      message: data.message,
+      consent: data.consent,
+      turnstileToken: data.turnstileToken,
+    }
+
     const response = await fetch('/.netlify/functions/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     })
 
     const result = await response.json()
