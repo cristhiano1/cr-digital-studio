@@ -223,7 +223,7 @@ export default function Services() {
           </h2>
           <p className="text-white/55 text-lg leading-relaxed">
             From manual workflows to custom web systems, CR Digital Studio helps
-            small businesses replace scattered tools, spreadsheets and repetitive
+            businesses, teams and growing companies replace scattered tools, spreadsheets and repetitive
             tasks with clean, practical software.
           </p>
         </motion.div>

@@ -16,7 +16,7 @@ export const services: Service[] = [
   {
     id: 'crm',
     icon: 'UsersRound',
-    title: 'Mini CRM Systems',
+    title: 'CRM & Client Management',
     description:
       'Organize leads, clients, follow-ups and customer information in one simple dashboard your team can actually use.',
   },

@@ -388,7 +388,7 @@ export default function TechStack() {
               className="w-1.5 h-1.5 rounded-full flex-shrink-0"
               style={{ background: '#64CEFB', boxShadow: '0 0 6px #64CEFB88' }}
             />
-            25 technologies · 5 categories
+            {techStack.length} technologies · {CATEGORIES.length} categories
           </span>
         </motion.div>
 

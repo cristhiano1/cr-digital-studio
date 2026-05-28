@@ -111,7 +111,7 @@ function TmsMockup() {
         <span className="ml-3 text-white/30 text-xs font-mono">therapy-system — dashboard</span>
         <div className="ml-auto flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          Live demo
+          System Showcase
         </div>
       </div>
 

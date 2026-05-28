@@ -33,7 +33,6 @@ export const techStack: TechItem[] = [
   { name: 'Cloudflare', category: 'devops' },
   // Monitoring & Services
   { name: 'Application Insights', category: 'monitoring' },
-  { name: 'Resend', category: 'monitoring' },
   { name: 'Cloudflare Turnstile', category: 'monitoring' },
   { name: 'AI Tools', category: 'monitoring' },
 ]

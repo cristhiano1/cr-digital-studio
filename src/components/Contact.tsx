@@ -280,9 +280,8 @@ export default function Contact() {
               {
                 icon: Mail,
                 label: 'Email',
-                // TODO: Replace with your real business email before going live
-                value: 'hello@crdigitalstudio.com',
-                href: 'mailto:hello@crdigitalstudio.com',
+                value: 'Use the contact form below',
+                href: '#contact',
                 color: '#64CEFB',
                 external: false,
               },

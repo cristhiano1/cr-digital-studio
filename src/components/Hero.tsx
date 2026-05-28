@@ -53,7 +53,7 @@ export default function Hero() {
               className="text-white/58 text-base sm:text-lg xl:text-xl leading-relaxed max-w-xl mb-5"
             >
               We build practical web applications, dashboards, booking systems,
-              CRM tools and automation workflows that help small businesses
+              CRM tools and automation workflows that help businesses, teams and growing companies
               organize data, save time and work smarter.
             </motion.p>
 
@@ -87,7 +87,7 @@ export default function Hero() {
                 className="group inline-flex items-center gap-2 glass text-white/85 hover:text-white font-semibold px-7 py-4 rounded-full transition-all duration-300 hover:bg-white/10 border border-white/14 text-sm sm:text-base"
               >
                 <Play size={15} className="fill-current opacity-75" />
-                Request a Demo
+                Request a Custom Demo
               </a>
             </motion.div>
           </div>
