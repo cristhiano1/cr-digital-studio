@@ -21,21 +21,21 @@
 
 @layer utilities {
   .glass {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(4, 12, 20, 0.56);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .glass-strong {
-    background: rgba(255, 255, 255, 0.07);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(3, 11, 18, 0.78);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(100, 206, 251, 0.13);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #64CEFB 0%, #ffffff 40%, #7b39fc 100%);
+    background: linear-gradient(135deg, #64CEFB 0%, #EAF7FF 48%, #168CFF 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -45,16 +45,16 @@
     background: linear-gradient(
       90deg,
       #64CEFB 0%,
-      #ffffff 25%,
-      #7b39fc 50%,
-      #ffffff 75%,
+      #EAF7FF 28%,
+      #168CFF 52%,
+      #EAF7FF 76%,
       #64CEFB 100%
     );
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: shine 4s linear infinite;
+    animation: shine 6.5s linear infinite;
   }
 
   @keyframes shine {
@@ -65,7 +65,7 @@
   @media (prefers-reduced-motion: reduce) {
     .shine-text {
       animation: none;
-      background: linear-gradient(135deg, #64CEFB 0%, #ffffff 50%, #7b39fc 100%);
+      background: linear-gradient(135deg, #64CEFB 0%, #EAF7FF 50%, #168CFF 100%);
       background-size: 100% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -75,19 +75,19 @@
 
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
+    50% { transform: translateY(-5px); }
   }
 
   .animate-float {
-    animation: float 6s ease-in-out infinite;
+    animation: float 7s ease-in-out infinite;
   }
 
   .animate-float-slow {
-    animation: float 8s ease-in-out infinite;
+    animation: float 9s ease-in-out infinite;
   }
 
   .animate-float-delayed {
-    animation: float 6s ease-in-out 2s infinite;
+    animation: float 7.5s ease-in-out 1.5s infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {
