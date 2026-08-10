@@ -1,0 +1,20 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cr-gradient" x1="18" y1="26" x2="108" y2="104" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EAF7FF"/>
+      <stop offset="0.32" stop-color="#64CEFB"/>
+      <stop offset="0.68" stop-color="#168CFF"/>
+      <stop offset="1" stop-color="#0B4DB7"/>
+    </linearGradient>
+    <filter id="soft-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <path d="M59.5 29.5C53.7 24.8 46.4 22 38.6 22C20 22 7 36.4 7 56.2C7 76.1 20.1 90.5 38.8 90.5C47.2 90.5 54.6 87.4 60.4 82.4L52.1 72.6C48.5 75.5 44.2 77.2 39.2 77.2C29.1 77.2 22.1 68.8 22.1 56.3C22.1 43.7 29.1 35.3 39.2 35.3C44 35.3 48.2 36.8 51.7 39.5L59.5 29.5Z" fill="url(#cr-gradient)" filter="url(#soft-glow)"/>
+  <path d="M57.5 24H83.8C100.3 24 110.9 33.2 110.9 47.2C110.9 57.4 105.3 65.3 96 68.8L116.2 104H98.2L80.9 72.2H72.5V104H57.5V24ZM72.5 37.3V59.2H82.4C90.7 59.2 95.7 55 95.7 48.2C95.7 41.3 90.7 37.3 82.4 37.3H72.5Z" fill="url(#cr-gradient)" filter="url(#soft-glow)"/>
+  <path d="M58.5 64L70 55.5" stroke="#B8EEFF" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+</svg>
