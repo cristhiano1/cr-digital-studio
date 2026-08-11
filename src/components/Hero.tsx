@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Play, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, LayoutGrid, CheckCircle2 } from 'lucide-react'
 import VideoBackground from './VideoBackground'
 import FloatingMetricCards from './FloatingMetricCards'
 
@@ -74,12 +74,12 @@ export default function Hero() {
                 href="#work"
                 className="group inline-flex items-center gap-2 rounded-full bg-white/[0.045] text-white/88 hover:text-white font-semibold px-7 py-4 transition-all duration-300 hover:bg-white/[0.075] border border-white/10 text-sm sm:text-base"
               >
-                <Play size={15} className="fill-current opacity-75" />
+                <LayoutGrid size={16} className="opacity-80" strokeWidth={1.8} />
                 See Example Systems
               </a>
             </motion.div>
 
-            <motion.p {...fadeUp(0.9)} className="mt-7 text-xs sm:text-sm text-white/42 max-w-xl leading-relaxed">
+            <motion.p {...fadeUp(0.9)} className="mt-7 text-xs sm:text-sm text-white/50 max-w-xl leading-relaxed">
               Clear scope, direct communication and software designed around the way your business actually works.
             </motion.p>
           </div>
