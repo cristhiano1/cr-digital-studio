@@ -52,7 +52,7 @@ const cards: CardData[] = [
 
 function MetricCard({ icon: Icon, label, sub, color }: Omit<CardData, 'delay' | 'floatClass' | 'posClass'>) {
   return (
-    <div className="rounded-2xl border border-white/[0.085] bg-[#06101B]/75 backdrop-blur-xl px-4 py-3 flex items-center gap-3 w-[215px] shadow-[0_18px_45px_rgba(0,0,0,0.28)]">
+    <div className="rounded-2xl border border-white/[0.085] bg-[#06101B]/75 backdrop-blur-xl px-4 py-3 flex items-center gap-3 w-[230px] shadow-[0_18px_45px_rgba(0,0,0,0.28)]">
       <div
         className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{ background: `${color}18`, border: `1px solid ${color}26` }}
