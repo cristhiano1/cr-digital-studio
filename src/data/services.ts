@@ -1,65 +1,74 @@
-export interface Service {
+import type { LucideIcon } from 'lucide-react'
+import { Globe, ClipboardList, CalendarCheck2, Settings } from 'lucide-react'
+
+export interface Solution {
   id: string
-  icon: string
+  icon: LucideIcon
   title: string
   description: string
+  capabilities: string[]
+  accent: string
 }
 
-export const services: Service[] = [
+export const solutions: Solution[] = [
   {
-    id: 'web-apps',
-    icon: 'AppWindow',
-    title: 'Custom Web Applications',
+    id: 'websites',
+    icon: Globe,
+    title: 'Business Websites',
     description:
-      'Custom systems designed around the way your business actually works, instead of relying on generic templates or manual workarounds.',
+      'Clear, well-structured websites that show what you do, how to get in touch and why someone should choose you — built so your team can update content without a developer.',
+    capabilities: [
+      'Fast on mobile and desktop',
+      'Local SEO foundations built in',
+      'Contact and enquiry forms that notify your team',
+      'Visitor tracking so you know what is working',
+      'Pages and copy your team can edit directly',
+    ],
+    accent: '#0A8CFF',
   },
   {
-    id: 'crm',
-    icon: 'UsersRound',
-    title: 'CRM & Client Management',
+    id: 'quotes-leads',
+    icon: ClipboardList,
+    title: 'Quote & Lead Systems',
     description:
-      'Organize leads, clients, follow-ups and customer information in one simple dashboard your team can actually use.',
+      'Capture enquiries, qualify leads and follow up automatically so nothing falls through the cracks.',
+    capabilities: [
+      'Multi-step quote request forms',
+      'Enquiries sorted by service, budget or urgency',
+      'Automatic follow-up emails when leads go quiet',
+      'Pipeline view so you see every open enquiry',
+      'Notifications routed to the right person',
+    ],
+    accent: '#64CEFB',
   },
   {
-    id: 'booking',
-    icon: 'CalendarClock',
-    title: 'Booking & Scheduling Platforms',
+    id: 'booking-flows',
+    icon: CalendarCheck2,
+    title: 'Booking & Customer Flows',
     description:
-      'Let clients book online while you manage calendars, appointments, availability and follow-ups from one place.',
+      'Let customers book, pay and manage appointments online while your team stays in control of availability.',
+    capabilities: [
+      'Customers pick a time and book themselves',
+      'Reminders sent automatically before each appointment',
+      'Portal where customers check or change bookings',
+      'Payment collected at booking or on the day',
+      'Calendar sync so double-bookings don’t happen',
+    ],
+    accent: '#168CFF',
   },
   {
-    id: 'dashboards',
-    icon: 'LayoutDashboard',
-    title: 'Dashboards & Reports',
+    id: 'internal-systems',
+    icon: Settings,
+    title: 'Internal Systems & Automation',
     description:
-      'Turn business data into clear dashboards, PDF exports, Excel reports and useful insights for better decisions.',
-  },
-  {
-    id: 'automation',
-    icon: 'Workflow',
-    title: 'Workflow Automation',
-    description:
-      'Reduce repetitive manual work by connecting steps, tools and tasks into cleaner digital workflows.',
-  },
-  {
-    id: 'ai-tools',
-    icon: 'Sparkles',
-    title: 'AI-Assisted Tools',
-    description:
-      'Use AI carefully for summaries, classification, support workflows and productivity features that still stay under human control.',
-  },
-  {
-    id: 'admin-panels',
-    icon: 'ShieldCheck',
-    title: 'Secure Admin Panels',
-    description:
-      'Create protected management areas with login, roles, permissions, audit logs and internal team access.',
-  },
-  {
-    id: 'cloud',
-    icon: 'CloudCog',
-    title: 'Cloud & Deployment',
-    description:
-      'Deploy web apps using cloud-ready workflows, Azure tools, databases, CI/CD pipelines and secure environment configuration.',
+      'Replace spreadsheets, manual steps and scattered tools with clean internal software your team actually uses.',
+    capabilities: [
+      'Admin panels where each role sees only what they need',
+      'Repetitive steps handled without manual input',
+      'Dashboards that show what matters, not everything',
+      'Data pulled from the tools you already use',
+      'AI for tagging, summaries and triage — human-reviewed',
+    ],
+    accent: '#64CEFB',
   },
 ]
