@@ -17,6 +17,20 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Visible keyboard focus — shown for keyboard/programmatic focus only,
+     never on mouse clicks. Brand-blue ring for consistent a11y. */
+  :focus-visible {
+    outline: 2px solid #64CEFB;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
 }
 
 @layer utilities {
