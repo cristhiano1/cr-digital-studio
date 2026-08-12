@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import Services from './components/Services'
 import FeaturedProject from './components/FeaturedProject'
 import Process from './components/Process'
+import About from './components/About'
 import TechStack from './components/TechStack'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
@@ -27,6 +28,7 @@ export default function App() {
           <Services />
           <FeaturedProject />
           <Process />
+          <About />
           <TechStack />
           <Contact />
         </main>
