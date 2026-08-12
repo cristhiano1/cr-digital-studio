@@ -20,9 +20,9 @@ interface ContactPayload {
   name?: string
   email?: string
   businessType?: string
-  business_type?: string // Fail-safe fallback mapping
+  business_type?: string
   serviceInterest?: string
-  service_interest?: string // Fail-safe fallback mapping
+  service_interest?: string
   message?: string
   consent?: boolean
   turnstileToken?: string
@@ -34,6 +34,15 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+}
+
 async function verifyTurnstile(token: string, secret: string): Promise<boolean> {
   const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
@@ -42,6 +51,62 @@ async function verifyTurnstile(token: string, secret: string): Promise<boolean> 
   })
   const data = (await res.json()) as { success: boolean }
   return data.success === true
+}
+
+// ─── Non-blocking lead notification via Resend ────────────────────────────────
+// Called after a successful Supabase insert. Failures are logged server-side
+// only — they must never cause a failed response to the user.
+
+async function sendResendNotification(params: {
+  name: string
+  email: string
+  businessType: string | null
+  serviceInterest: string | null
+  message: string
+}): Promise<void> {
+  const apiKey    = process.env.RESEND_API_KEY
+  const toEmail   = process.env.CONTACT_EMAIL
+  const fromEmail = process.env.RESEND_FROM_EMAIL
+
+  if (!apiKey || !toEmail || !fromEmail) {
+    console.log('[contact] Resend not configured — notification skipped. Set RESEND_API_KEY, CONTACT_EMAIL and RESEND_FROM_EMAIL to enable.')
+    return
+  }
+
+  const rows: string[] = []
+  rows.push('<h2 style="margin:0 0 16px">New Free Audit Request — CR Digital Systems</h2>')
+  rows.push(`<p><strong>Name:</strong> ${escapeHtml(params.name)}</p>`)
+  rows.push(`<p><strong>Email:</strong> ${escapeHtml(params.email)}</p>`)
+  if (params.businessType) {
+    rows.push(`<p><strong>Business / company:</strong> ${escapeHtml(params.businessType)}</p>`)
+  }
+  if (params.serviceInterest) {
+    rows.push(`<p><strong>Requested solution:</strong> ${escapeHtml(params.serviceInterest)}</p>`)
+  }
+  rows.push('<hr style="margin:16px 0;border:none;border-top:1px solid #e5e7eb">')
+  rows.push('<p><strong>Current challenge:</strong></p>')
+  rows.push(`<p style="white-space:pre-wrap">${escapeHtml(params.message)}</p>`)
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization:  `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from:     fromEmail,
+      to:       [toEmail],
+      reply_to: params.email,
+      subject:  `Free Audit Request: ${params.name}`,
+      html:     rows.join('\n'),
+    }),
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    console.error('[contact] Resend notification failed:', res.status, text)
+    // Do not throw — caller catches this in a non-fatal try/catch
+  }
 }
 
 // ─── Handler ──────────────────────────────────────────────────────────────────
@@ -99,7 +164,6 @@ export const handler: Handler = async (event) => {
   const name            = payload.name?.trim()            ?? ''
   const email           = payload.email?.trim()           ?? ''
   const message         = payload.message?.trim()         ?? ''
-  // Optional fields — empty string is normalised to null for the DB column
   const businessType    = (payload.businessType || payload.business_type)?.trim()    || null
   const serviceInterest = (payload.serviceInterest || payload.service_interest)?.trim() || null
 
@@ -128,11 +192,14 @@ export const handler: Handler = async (event) => {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ message: 'Please accept the consent checkbox before submitting.' }),
+      body: JSON.stringify({ message: 'Please confirm you agree before submitting.' }),
     }
   }
 
   // ── 4. Turnstile — only enforced when secret key is configured ────────────
+  // WARNING: Do not set TURNSTILE_SECRET_KEY until the frontend Turnstile widget
+  // and VITE_TURNSTILE_SITE_KEY are implemented. Setting the secret without the
+  // widget will cause all form submissions to fail.
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
   if (turnstileSecret) {
     if (!payload.turnstileToken) {
@@ -154,17 +221,16 @@ export const handler: Handler = async (event) => {
 
   // ── 5. Insert into Supabase via REST API (plain fetch — no WebSocket) ─────
   try {
-    // Normalize URL: remove trailing slashes and any accidental /rest/v1 suffix
     const baseUrl  = supabaseUrl.replace(/\/+$/, '').replace(/\/rest\/v1$/, '')
     const endpoint = `${baseUrl}/rest/v1/contact_messages`
 
     const res = await fetch(endpoint, {
       method: 'POST',
       headers: {
-        apikey:          supabaseKey,
-        Authorization:   `Bearer ${supabaseKey}`,
-        'Content-Type':  'application/json',
-        Prefer:          'return=minimal',
+        apikey:         supabaseKey,
+        Authorization:  `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        Prefer:         'return=minimal',
       },
       body: JSON.stringify({
         name,
@@ -178,7 +244,6 @@ export const handler: Handler = async (event) => {
     })
 
     if (!res.ok) {
-      // Log full details server-side only — never expose them to the caller
       const text = await res.text()
       console.error('[contact] Supabase REST insert failed:', res.status, text)
       return {
@@ -190,17 +255,8 @@ export const handler: Handler = async (event) => {
         }),
       }
     }
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        message: "Thank you! We've received your message and will review it soon.",
-      }),
-    }
   } catch (err) {
-    console.error('[contact] Unexpected error:', err)
+    console.error('[contact] Unexpected Supabase error:', err)
     return {
       statusCode: 500,
       headers,
@@ -209,5 +265,24 @@ export const handler: Handler = async (event) => {
           'Something went wrong on our end. Please try again or reach out through LinkedIn.',
       }),
     }
+  }
+
+  // ── 6. Non-blocking lead notification via Resend ──────────────────────────
+  // Supabase is the source of record. Email is notification only.
+  // Failure here is logged server-side and must not affect the user response.
+  try {
+    await sendResendNotification({ name, email, businessType, serviceInterest, message })
+  } catch (err) {
+    console.error('[contact] Unexpected notification error:', err)
+  }
+
+  // ── 7. Respond to client ──────────────────────────────────────────────────
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({
+      success: true,
+      message: "Thank you! We've received your message and will review it soon.",
+    }),
   }
 }

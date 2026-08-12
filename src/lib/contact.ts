@@ -1,9 +1,10 @@
 export interface ContactFormData {
   name: string
   email: string
-  businessType: string
-  serviceInterest: string
-  message: string
+  business: string
+  helpWith: string
+  challenge: string
+  currentSystem?: string
   consent: boolean
   turnstileToken?: string
 }
@@ -17,16 +18,20 @@ export async function submitContactForm(
   data: ContactFormData
 ): Promise<ContactResponse> {
   try {
+    const messageBody = data.currentSystem?.trim()
+      ? `${data.challenge}\n\nCurrent website / system: ${data.currentSystem.trim()}`
+      : data.challenge
+
     const payload = {
-      name: data.name,
-      email: data.email,
-      businessType: data.businessType,
-      business_type: data.businessType, // Map both to prevent any backend casing mismatches
-      serviceInterest: data.serviceInterest,
-      service_interest: data.serviceInterest, // Map both to prevent any backend casing mismatches
-      message: data.message,
-      consent: data.consent,
-      turnstileToken: data.turnstileToken,
+      name:             data.name,
+      email:            data.email,
+      businessType:     data.business,
+      business_type:    data.business,
+      serviceInterest:  data.helpWith,
+      service_interest: data.helpWith,
+      message:          messageBody,
+      consent:          data.consent,
+      turnstileToken:   data.turnstileToken,
     }
 
     const response = await fetch('/.netlify/functions/contact', {
@@ -44,7 +49,7 @@ export async function submitContactForm(
       }
     }
 
-    return { success: true, message: result.message ?? 'Message sent successfully.' }
+    return { success: true, message: result.message ?? 'Request received.' }
   } catch {
     return {
       success: false,

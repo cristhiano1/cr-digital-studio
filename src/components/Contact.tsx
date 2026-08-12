@@ -1,90 +1,81 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react'
 import { motion } from 'framer-motion'
-
-const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
-import { Send, CheckCircle, AlertCircle, Link2, Mail, Calendar } from 'lucide-react'
+import { CheckCircle, AlertCircle } from 'lucide-react'
 import { submitContactForm, type ContactFormData } from '../lib/contact'
 
-const serviceOptions = [
-  'Custom Web Application',
-  'Mini CRM System',
-  'Booking & Scheduling Platform',
-  'Dashboard & Reports',
-  'Workflow Automation',
-  'AI-Assisted Tools',
-  'Secure Admin Panel',
-  'Cloud & Deployment',
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
+
+const helpOptions = [
+  'Business Website',
+  'Quote & Lead System',
+  'Booking & Customer Flow',
+  'Internal System',
+  'Automation / Integration',
   'Not sure yet',
+]
+
+const nextSteps = [
+  'You describe the current problem',
+  'The workflow or existing setup is reviewed',
+  'You receive a practical recommended next step',
 ]
 
 const initialForm: ContactFormData = {
   name: '',
   email: '',
-  businessType: '',
-  serviceInterest: '',
-  message: '',
+  business: '',
+  helpWith: '',
+  challenge: '',
+  currentSystem: '',
   consent: false,
 }
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 
-function InputField({
-  label,
-  id,
-  type = 'text',
-  value,
-  onChange,
-  placeholder,
-  required,
-}: {
-  label: string
-  id: string
-  type?: string
-  value: string
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void
-  placeholder?: string
-  required?: boolean
-}) {
-  return (
-    <div>
-      <label htmlFor={id} className="block text-white/60 text-sm mb-1.5 font-medium">
-        {label} {required && <span className="text-[#7b39fc]">*</span>}
-      </label>
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        required={required}
-        className="w-full bg-white/04 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#7b39fc]/60 focus:bg-white/06 transition-all duration-200"
-      />
-    </div>
-  )
+function clientValidate(form: ContactFormData): string | null {
+  if (form.name.trim().length < 2)
+    return 'Please enter your name (at least 2 characters).'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
+    return 'Please enter a valid email address.'
+  if (!form.business.trim())
+    return 'Please enter your business or company name.'
+  if (!form.helpWith)
+    return 'Please select what you need help with.'
+  if (form.challenge.trim().length < 10)
+    return 'Please describe the current challenge (at least 10 characters).'
+  if (!form.consent)
+    return 'Please confirm you agree before submitting.'
+  return null
 }
+
+const inputClass =
+  'w-full bg-white/[0.03] border border-white/08 rounded-xl px-4 py-3 text-white text-sm ' +
+  'placeholder-white/25 focus:outline-none focus:border-[#0A8CFF]/50 focus:bg-white/[0.05] ' +
+  'transition-all duration-200'
 
 export default function Contact() {
   const [form, setForm] = useState<ContactFormData>(initialForm)
   const [status, setStatus] = useState<FormStatus>('idle')
   const [statusMessage, setStatusMessage] = useState('')
 
-  const set = (field: keyof ContactFormData) =>
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      const value =
-        e.target instanceof HTMLInputElement && e.target.type === 'checkbox'
-          ? (e.target as HTMLInputElement).checked
-          : e.target.value
-      setForm((prev) => ({ ...prev, [field]: value }))
-    }
+  const set =
+    (field: keyof ContactFormData) =>
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+      setForm((prev) => ({ ...prev, [field]: e.target.value }))
+
+  const setConsent = (e: ChangeEvent<HTMLInputElement>) =>
+    setForm((prev) => ({ ...prev, consent: e.target.checked }))
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!form.consent) {
+    const error = clientValidate(form)
+    if (error) {
       setStatus('error')
-      setStatusMessage('Please accept the consent checkbox before submitting.')
+      setStatusMessage(error)
       return
     }
     setStatus('loading')
+    setStatusMessage('')
     const result = await submitContactForm(form)
     if (result.success) {
       setStatus('success')
@@ -99,240 +90,371 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="relative py-28 bg-[#050008] overflow-hidden"
-      aria-label="Contact"
+      className="relative py-28 bg-[#020B14] overflow-hidden"
+      aria-label="Contact — Free Audit"
     >
+      {/* Subtle blue ambient glow */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] opacity-10 pointer-events-none"
+        className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse, rgba(123,57,252,0.8) 0%, transparent 70%)',
+            'radial-gradient(ellipse 55% 50% at 90% 10%, rgba(10,140,255,0.07) 0%, transparent 100%)',
         }}
+        aria-hidden="true"
       />
 
-      <div className="relative max-w-7xl mx-auto px-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.7, ease: EASE }}
-          className="max-w-2xl mb-14"
-        >
-          <span className="inline-flex items-center gap-2 text-[#7b39fc] text-xs tracking-widest uppercase font-semibold mb-4">
-            <span className="w-4 h-px bg-[#7b39fc]" />
-            Get in touch
-          </span>
-          <h2 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-5">
-            Have a manual process you want{' '}
-            <span className="text-gradient">to turn into a system?</span>
-          </h2>
-          <p className="text-white/55 text-lg leading-relaxed">
-            Tell us what you currently manage with Excel, messages, paper forms or
-            disconnected tools. We can help turn it into a simple, professional web
-            system.
-          </p>
-        </motion.div>
+      <div className="relative max-w-6xl mx-auto px-6">
+        <div className="grid lg:grid-cols-[2fr_3fr] gap-14 lg:gap-20 items-start">
 
-        <div className="grid lg:grid-cols-3 gap-10">
-          {/* Form */}
+          {/* ── LEFT: Audit explanation ───────────────────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.7, ease: EASE }}
+          >
+            <span className="inline-flex items-center gap-2 text-[#0A8CFF] text-xs tracking-widest uppercase font-semibold mb-5">
+              <span className="w-4 h-px bg-[#0A8CFF]/60" aria-hidden="true" />
+              Free Audit
+            </span>
+
+            <h2 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-6">
+              Show us where the work gets stuck.
+            </h2>
+
+            <p className="text-white/50 text-base leading-relaxed mb-10">
+              Tell us how the business works today and where things are getting stuck.
+              The workflow or existing setup can be reviewed to identify practical
+              opportunities — a better website, a customer flow, an internal system or
+              an automation.
+            </p>
+
+            {/* What happens next */}
+            <div className="mb-10">
+              <p className="text-white/35 text-xs uppercase tracking-widest font-semibold mb-5">
+                What happens next
+              </p>
+              <ol className="space-y-5" aria-label="Process steps">
+                {nextSteps.map((step, i) => (
+                  <li key={step} className="flex items-start gap-4">
+                    <span
+                      className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-[#0A8CFF]"
+                      style={{
+                        background: 'rgba(10,140,255,0.10)',
+                        border: '1px solid rgba(10,140,255,0.20)',
+                      }}
+                      aria-hidden="true"
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <p className="text-white/55 text-sm leading-relaxed pt-1">{step}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            {/* Reassurance */}
+            <div className="pl-4 border-l border-[#0A8CFF]/25 mb-10">
+              <p className="text-white/40 text-sm leading-relaxed">
+                Not sure what kind of system you need? Describe the problem — the
+                technical approach can be worked out afterwards.
+              </p>
+            </div>
+
+            {/* LinkedIn */}
+            <a
+              href="https://www.linkedin.com/in/cristhian-rodriguez-rodrgo-280176252/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-white/35 hover:text-white/60 text-xs transition-colors duration-200"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                <rect x="2" y="9" width="4" height="12" />
+                <circle cx="4" cy="4" r="2" />
+              </svg>
+              Cristhian Rodriguez on LinkedIn
+            </a>
+          </motion.div>
+
+          {/* ── RIGHT: Form panel ─────────────────────────────────────────────── */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.7, ease: EASE }}
-            className="lg:col-span-2"
+            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
           >
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-              className="glass-strong rounded-3xl p-8 space-y-5"
-            >
-              {/* Success state */}
-              {status === 'success' && (
-                <div className="flex items-start gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
-                  <CheckCircle size={20} className="text-emerald-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-emerald-300 text-sm">{statusMessage}</p>
-                </div>
-              )}
-
-              {/* Error state */}
-              {status === 'error' && (
-                <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-                  <AlertCircle size={20} className="text-red-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-red-300 text-sm">{statusMessage}</p>
-                </div>
-              )}
-
-              <div className="grid sm:grid-cols-2 gap-5">
-                <InputField
-                  label="Name"
-                  id="name"
-                  value={form.name}
-                  onChange={set('name')}
-                  placeholder="Your name"
-                  required
+            {status === 'success' ? (
+              /* Success state */
+              <div
+                className="rounded-2xl p-8 sm:p-10"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                }}
+                role="status"
+                aria-live="polite"
+              >
+                <CheckCircle
+                  size={28}
+                  className="text-[#0A8CFF] mb-5"
+                  aria-hidden="true"
                 />
-                <InputField
-                  label="Email"
-                  id="email"
-                  type="email"
-                  value={form.email}
-                  onChange={set('email')}
-                  placeholder="your@email.com"
-                  required
-                />
+                <p className="text-white font-semibold text-lg mb-2">
+                  Request received.
+                </p>
+                <p className="text-white/50 text-sm leading-relaxed mb-7">
+                  {statusMessage}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStatus('idle')
+                    setStatusMessage('')
+                  }}
+                  className="text-[#0A8CFF] text-sm hover:underline"
+                >
+                  Send another enquiry
+                </button>
               </div>
+            ) : (
+              /* Form */
+              <form
+                onSubmit={handleSubmit}
+                noValidate
+                aria-label="Free audit request"
+                className="rounded-2xl p-7 sm:p-8 space-y-5"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                }}
+              >
+                {/* Error banner */}
+                {status === 'error' && (
+                  <div
+                    role="alert"
+                    className="flex items-start gap-3 p-4 rounded-xl"
+                    style={{
+                      background: 'rgba(239,68,68,0.07)',
+                      border: '1px solid rgba(239,68,68,0.20)',
+                    }}
+                  >
+                    <AlertCircle
+                      size={17}
+                      className="text-red-400 flex-shrink-0 mt-0.5"
+                      aria-hidden="true"
+                    />
+                    <p className="text-red-300 text-sm">{statusMessage}</p>
+                  </div>
+                )}
 
-              <div className="grid sm:grid-cols-2 gap-5">
-                <InputField
-                  label="Business type"
-                  id="businessType"
-                  value={form.businessType}
-                  onChange={set('businessType')}
-                  placeholder="e.g. Clinic, Agency, Retail..."
-                />
+                {/* Row 1: Name / Email */}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="cf-name"
+                      className="block text-white/55 text-sm font-medium mb-1.5"
+                    >
+                      Your name{' '}
+                      <span className="text-[#0A8CFF]" aria-hidden="true">
+                        *
+                      </span>
+                    </label>
+                    <input
+                      id="cf-name"
+                      type="text"
+                      value={form.name}
+                      onChange={set('name')}
+                      autoComplete="name"
+                      required
+                      aria-required="true"
+                      placeholder="Your name"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="cf-email"
+                      className="block text-white/55 text-sm font-medium mb-1.5"
+                    >
+                      Work email{' '}
+                      <span className="text-[#0A8CFF]" aria-hidden="true">
+                        *
+                      </span>
+                    </label>
+                    <input
+                      id="cf-email"
+                      type="email"
+                      value={form.email}
+                      onChange={set('email')}
+                      autoComplete="email"
+                      required
+                      aria-required="true"
+                      placeholder="you@company.com"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
 
+                {/* Row 2: Business / Help with */}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="cf-business"
+                      className="block text-white/55 text-sm font-medium mb-1.5"
+                    >
+                      Business / company{' '}
+                      <span className="text-[#0A8CFF]" aria-hidden="true">
+                        *
+                      </span>
+                    </label>
+                    <input
+                      id="cf-business"
+                      type="text"
+                      value={form.business}
+                      onChange={set('business')}
+                      autoComplete="organization"
+                      required
+                      aria-required="true"
+                      placeholder="Company name"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="cf-help"
+                      className="block text-white/55 text-sm font-medium mb-1.5"
+                    >
+                      What do you need help with?{' '}
+                      <span className="text-[#0A8CFF]" aria-hidden="true">
+                        *
+                      </span>
+                    </label>
+                    <select
+                      id="cf-help"
+                      value={form.helpWith}
+                      onChange={set('helpWith')}
+                      required
+                      aria-required="true"
+                      className={inputClass + ' appearance-none cursor-pointer'}
+                      style={{
+                        color: form.helpWith ? '#fff' : 'rgba(255,255,255,0.25)',
+                      }}
+                    >
+                      <option
+                        value=""
+                        disabled
+                        style={{ color: '#fff', background: '#0a1628' }}
+                      >
+                        Select a category…
+                      </option>
+                      {helpOptions.map((opt) => (
+                        <option
+                          key={opt}
+                          value={opt}
+                          style={{ color: '#fff', background: '#0a1628' }}
+                        >
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Challenge */}
                 <div>
                   <label
-                    htmlFor="serviceInterest"
-                    className="block text-white/60 text-sm mb-1.5 font-medium"
+                    htmlFor="cf-challenge"
+                    className="block text-white/55 text-sm font-medium mb-1.5"
                   >
-                    Service interest
+                    What is slowing the business down today?{' '}
+                    <span className="text-[#0A8CFF]" aria-hidden="true">
+                      *
+                    </span>
                   </label>
-                  <select
-                    id="serviceInterest"
-                    value={form.serviceInterest}
-                    onChange={set('serviceInterest')}
-                    className="w-full bg-white/04 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#7b39fc]/60 focus:bg-white/06 transition-all duration-200 appearance-none"
-                    style={{ color: form.serviceInterest ? '#fff' : 'rgba(255,255,255,0.25)' }}
-                  >
-                    <option value="" disabled>Select a service...</option>
-                    {serviceOptions.map((s) => (
-                      <option key={s} value={s} style={{ color: '#000', background: '#1a1a2e' }}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
+                  <textarea
+                    id="cf-challenge"
+                    value={form.challenge}
+                    onChange={set('challenge')}
+                    required
+                    aria-required="true"
+                    rows={5}
+                    placeholder="Tell us what currently happens, what is manual, or where customers or team members get stuck."
+                    className={inputClass + ' resize-none'}
+                  />
                 </div>
-              </div>
 
-              <div>
-                <label htmlFor="message" className="block text-white/60 text-sm mb-1.5 font-medium">
-                  Your message <span className="text-[#7b39fc]">*</span>
-                </label>
-                <textarea
-                  id="message"
-                  value={form.message}
-                  onChange={set('message')}
-                  required
-                  rows={5}
-                  placeholder="Describe what you currently manage manually or what system you need..."
-                  className="w-full bg-white/04 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-white/25 text-sm focus:outline-none focus:border-[#7b39fc]/60 focus:bg-white/06 transition-all duration-200 resize-none"
-                />
-              </div>
-
-              {/* Consent */}
-              <label className="flex items-start gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={form.consent}
-                  onChange={set('consent')}
-                  className="mt-0.5 w-4 h-4 rounded accent-[#7b39fc] flex-shrink-0"
-                />
-                <span className="text-white/50 text-sm leading-relaxed group-hover:text-white/65 transition-colors">
-                  I agree that CR Digital Studio may store this message to respond to my inquiry.
-                  No data is shared with third parties.
-                </span>
-              </label>
-
-              {/* Cloudflare Turnstile anti-spam token verification is enforced on the serverless backend once keys are configured */}
-
-              <button
-                type="submit"
-                disabled={status === 'loading'}
-                className="w-full flex items-center justify-center gap-2 bg-[#7b39fc] hover:bg-[#6a2ee0] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-6 py-4 rounded-full transition-all duration-300 hover:scale-[1.01] shadow-lg shadow-purple-500/25 text-sm"
-              >
-                {status === 'loading' ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Send size={16} />
-                    Send Message
-                  </>
-                )}
-              </button>
-            </form>
-          </motion.div>
-
-          {/* Contact options sidebar */}
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
-            className="space-y-4"
-          >
-            {[
-              {
-                icon: Mail,
-                label: 'Email',
-                value: 'Use the contact form below',
-                href: '#contact',
-                color: '#64CEFB',
-                external: false,
-              },
-              {
-                icon: Calendar,
-                label: 'Start a Project',
-                value: 'Inquire Now',
-                href: '#contact',
-                color: '#7b39fc',
-                external: false,
-              },
-              {
-                icon: Link2,
-                label: 'LinkedIn',
-                value: 'Cristhian Rodriguez',
-                href: 'https://www.linkedin.com/in/cristhian-rodriguez-rodrgo-280176252/',
-                color: '#64CEFB',
-                external: true,
-              },
-            ].map(({ icon: Icon, label, value, href, color, external }) => (
-              <a
-                key={label}
-                href={href}
-                target={external ? '_blank' : undefined}
-                rel={external ? 'noopener noreferrer' : undefined}
-                className="glass rounded-2xl p-5 flex items-center gap-4 border border-white/06 hover:border-white/14 transition-all duration-300 hover:-translate-y-0.5 group block"
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: `${color}1a` }}
-                >
-                  <Icon size={18} style={{ color }} />
-                </div>
+                {/* Optional: current website / system */}
                 <div>
-                  <p className="text-white/40 text-xs mb-0.5">{label}</p>
-                  <p className="text-white/80 group-hover:text-white text-sm font-medium transition-colors">
-                    {value}
-                  </p>
+                  <label
+                    htmlFor="cf-system"
+                    className="block text-white/55 text-sm font-medium mb-1.5"
+                  >
+                    Current website / system{' '}
+                    <span className="text-white/30 font-normal">(optional)</span>
+                  </label>
+                  <input
+                    id="cf-system"
+                    type="text"
+                    value={form.currentSystem ?? ''}
+                    onChange={set('currentSystem')}
+                    placeholder="e.g. yoursite.com or describe the current setup"
+                    className={inputClass}
+                  />
                 </div>
-              </a>
-            ))}
 
-            <div className="glass rounded-2xl p-5 border border-white/06 mt-4">
-              <p className="text-white/40 text-xs uppercase tracking-wider font-medium mb-2">
-                Response time
-              </p>
-              <p className="text-white/70 text-sm leading-relaxed">
-                We typically respond within 1–2 business days. For urgent inquiries,
-                email directly.
-              </p>
-            </div>
+                {/* Consent checkbox */}
+                <label
+                  htmlFor="cf-consent"
+                  className="flex items-start gap-3 cursor-pointer group"
+                >
+                  <input
+                    type="checkbox"
+                    id="cf-consent"
+                    checked={form.consent}
+                    onChange={setConsent}
+                    required
+                    aria-required="true"
+                    className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#0A8CFF] cursor-pointer"
+                  />
+                  <span className="text-white/45 text-xs leading-relaxed select-none group-hover:text-white/55 transition-colors">
+                    I agree that my details may be used to review and respond to this
+                    enquiry.
+                  </span>
+                </label>
+
+                {/* Privacy note + submit */}
+                <div className="pt-1 space-y-4">
+                  <p className="text-white/30 text-xs leading-relaxed">
+                    Your details are used only to review and respond to this enquiry.
+                  </p>
+                  <button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="w-full flex items-center justify-center gap-2 bg-[#0A8CFF] hover:bg-[#168CFF] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-6 py-4 rounded-full transition-all duration-300 hover:scale-[1.01] text-sm"
+                    style={{ boxShadow: '0 4px 24px rgba(10,140,255,0.22)' }}
+                  >
+                    {status === 'loading' ? (
+                      <>
+                        <span
+                          className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin motion-reduce:animate-none"
+                          aria-hidden="true"
+                        />
+                        Sending…
+                      </>
+                    ) : (
+                      'Request Free Audit'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </motion.div>
         </div>
       </div>
