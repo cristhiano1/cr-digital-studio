@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router'
 import { Menu, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const navLinks = [
-  { label: 'Solutions', href: '#services' },
-  { label: 'Projects', href: '#work' },
-  { label: 'Process', href: '#process' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Solutions', href: '/#services' },
+  { label: 'Projects', href: '/#work' },
+  { label: 'Process', href: '/#process' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/#contact' },
 ]
 
 export default function Navbar() {
@@ -29,8 +31,8 @@ export default function Navbar() {
             isScrolled ? 'glass-strong shadow-xl shadow-black/30' : 'glass'
           }`}
         >
-          <a
-            href="#hero"
+          <Link
+            to="/"
             className="flex items-center gap-2.5 group min-w-0"
             aria-label="CR Digital Systems — home"
           >
@@ -48,27 +50,27 @@ export default function Navbar() {
                 SYSTEMS
               </span>
             </span>
-          </a>
+          </Link>
 
           <ul className="hidden lg:flex items-center gap-1" role="list">
             {navLinks.map(({ label, href }) => (
               <li key={label}>
-                <a
-                  href={href}
+                <Link
+                  to={href}
                   className="text-white/65 hover:text-white text-sm px-4 py-2 rounded-full transition-all duration-200 hover:bg-white/[0.045]"
                 >
                   {label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
 
-          <a
-            href="#contact"
+          <Link
+            to="/#contact"
             className="hidden lg:inline-flex items-center justify-center rounded-full border border-[#64CEFB]/30 bg-[#0A8CFF] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_32px_rgba(10,140,255,0.18)] transition-all duration-200 hover:bg-[#1598ff] hover:border-[#64CEFB]/50 hover:-translate-y-0.5"
           >
             Get a Free Audit
-          </a>
+          </Link>
 
           <button
             className="lg:hidden text-white/80 hover:text-white p-2 -mr-2 transition-colors"
@@ -93,23 +95,23 @@ export default function Navbar() {
             <ul className="flex flex-col gap-1" role="list">
               {navLinks.map(({ label, href }) => (
                 <li key={label}>
-                  <a
-                    href={href}
+                  <Link
+                    to={href}
                     onClick={closeMenu}
                     className="block text-white/75 hover:text-white text-base px-4 py-3 rounded-2xl hover:bg-white/5 transition-all"
                   >
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
-            <a
-              href="#contact"
+            <Link
+              to="/#contact"
               onClick={closeMenu}
               className="mt-4 flex items-center justify-center rounded-full border border-[#64CEFB]/30 bg-[#0A8CFF] px-5 py-3 text-sm font-semibold text-white"
             >
               Get a Free Audit
-            </a>
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>

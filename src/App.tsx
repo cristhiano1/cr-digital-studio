@@ -3,6 +3,7 @@ import { MotionConfig } from 'framer-motion'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import HomePage from './pages/HomePage'
+import AboutPage from './pages/AboutPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ScrollToHash from './components/ScrollToHash'
 
@@ -21,6 +22,7 @@ export default function App() {
           <ScrollToHash />
           <Routes>
             <Route index element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

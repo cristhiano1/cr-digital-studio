@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router'
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 
@@ -6,7 +7,7 @@ const trustSignals = [
   {
     label: 'Clear Scope',
     description:
-      'The system is defined before development starts. You know what is being built, what is included and where the boundaries are.',
+      'The system is defined before development starts. What is being built, what is included and where the boundaries are — agreed before a line of code is written.',
   },
   {
     label: 'Direct Communication',
@@ -14,19 +15,9 @@ const trustSignals = [
       'Technical questions go directly to the person doing the work. No account managers between you and the builder.',
   },
   {
-    label: 'Visible Progress',
-    description:
-      'Working flows are demonstrated during development. Progress is shown, not just reported.',
-  },
-  {
     label: 'Built for Handover',
     description:
       'Code and systems are written to remain understandable and maintainable after launch — not only during it.',
-  },
-  {
-    label: 'Security Considered',
-    description:
-      'Authentication, permissions and sensitive data handling are addressed where the system requires them.',
   },
 ]
 
@@ -73,20 +64,19 @@ export default function About() {
           <h2 className="text-4xl sm:text-5xl font-bold text-white leading-tight max-w-2xl">
             Built with direct technical ownership.
           </h2>
-          <p className="mt-5 text-white/50 text-lg leading-relaxed max-w-2xl">
-            CR Digital Systems builds practical websites and software systems for businesses that
-            need more than a template — with direct ownership of both the business workflow and
-            the technical implementation.
+          <p className="mt-5 text-white/50 text-base leading-relaxed max-w-2xl">
+            CR Digital Systems builds practical websites and software systems for businesses,
+            with direct ownership of both the business workflow and the technical implementation.
           </p>
         </motion.div>
 
-        {/* Trust signals */}
+        {/* Trust signals — condensed to 3 */}
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-60px' }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-8 mb-16"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-8 mb-16"
         >
           {trustSignals.map((signal) => (
             <motion.div
@@ -100,15 +90,15 @@ export default function About() {
           ))}
         </motion.div>
 
-        {/* Builder identity */}
+        {/* Builder identity + About link */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="pt-10 border-t border-white/06"
+          className="pt-10 border-t border-white/[0.06]"
         >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 mb-8">
             <div
               className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
@@ -128,6 +118,14 @@ export default function About() {
               Work directly with the person designing, building and deploying the system.
             </p>
           </div>
+
+          <Link
+            to="/about"
+            className="inline-flex items-center gap-1.5 text-[#64CEFB] text-sm font-medium hover:text-white transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A8CFF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#030C1A] rounded"
+          >
+            About CR Digital Systems
+            <span aria-hidden="true">→</span>
+          </Link>
         </motion.div>
 
       </div>
