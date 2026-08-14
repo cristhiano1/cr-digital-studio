@@ -3,14 +3,14 @@ import { processSteps } from '../data/processSteps'
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 
-const container = {
+const stagger = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.14 } },
+  show: { transition: { staggerChildren: 0.12 } },
 }
 
-const item = {
-  hidden: { opacity: 0, y: 22 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
 }
 
 export default function Process() {
@@ -37,96 +37,140 @@ export default function Process() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: EASE }}
-          className="mb-16 lg:mb-20"
+          className="mb-16 lg:mb-20 max-w-2xl"
         >
           <span className="inline-flex items-center gap-2 text-[#0A8CFF] text-xs tracking-widest uppercase font-semibold mb-5">
             <span className="w-4 h-px bg-[#0A8CFF]/60" aria-hidden="true" />
-            How it works
+            How we work
           </span>
-          <h2 className="text-4xl sm:text-5xl font-bold text-white leading-tight max-w-xl">
-            From first conversation<br className="hidden sm:block" /> to working system.
+          <h2 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-5">
+            From business problem<br className="hidden sm:block" /> to working system.
           </h2>
+          <p className="text-white/55 text-base leading-relaxed">
+            Every project starts by understanding the workflow before deciding what should be built.
+            Scope is defined early, progress stays visible, and launch is treated as the start of
+            improvement rather than the end of the project.
+          </p>
         </motion.div>
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Vertical connector line — runs full height of the timeline wrapper */}
-          <div
-            className="absolute left-5 top-0 bottom-0 w-px bg-white/06"
-            aria-hidden="true"
-          />
+        {/* ── DESKTOP (lg+): horizontal four-column progression ── */}
+        <motion.div
+          className="hidden lg:block"
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-60px' }}
+        >
+          <div className="relative grid grid-cols-4 gap-8">
+            {/* Connector line spanning all four circles */}
+            <div
+              className="absolute top-4 h-px bg-white/[0.08]"
+              style={{ left: '16px', right: '16px' }}
+              aria-hidden="true"
+            />
 
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: '-60px' }}
-          >
-            {processSteps.map((step, idx) => {
-              const isLast = idx === processSteps.length - 1
+            {processSteps.map((step, i) => {
+              const isFeatured = i === 2
               return (
-                <motion.div
-                  key={step.number}
-                  variants={item}
-                  className={`relative grid grid-cols-[2.5rem_1fr] gap-x-6 lg:gap-x-10 ${isLast ? '' : 'pb-12 lg:pb-14'}`}
-                >
-                  {/* Number circle — sits above the connector line */}
-                  <div className="relative z-10 flex-shrink-0">
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center"
-                      style={{
-                        background: '#020B14',
-                        border: '1px solid rgba(10,140,255,0.30)',
-                        boxShadow: '0 0 0 5px #020B14',
-                      }}
+                <motion.div key={step.number} variants={fadeUp} className="relative flex flex-col">
+                  {/* Circle */}
+                  <div
+                    className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center mb-8 flex-shrink-0 border ${
+                      isFeatured ? 'border-[#0A8CFF]/45' : 'border-white/[0.12]'
+                    }`}
+                    style={{ background: '#020B14' }}
+                  >
+                    <span
+                      className={`text-[11px] font-mono font-bold ${
+                        isFeatured ? 'text-[#0A8CFF]' : 'text-[#0A8CFF]/55'
+                      }`}
+                      aria-hidden="true"
                     >
-                      <span
-                        className="text-[11px] font-mono font-bold"
-                        style={{ color: '#0A8CFF' }}
-                      >
-                        {step.number}
-                      </span>
-                    </div>
+                      {step.number}
+                    </span>
                   </div>
 
                   {/* Content */}
-                  <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-x-10 pt-1.5">
-                    <div>
-                      <h3 className="text-white font-semibold text-lg leading-snug">
-                        {step.title}
-                      </h3>
-                    </div>
-                    <div className="mt-3 lg:mt-0">
-                      <p className="text-white/50 text-sm leading-relaxed">
-                        {step.description}
-                      </p>
-                      <ul
-                        className="mt-4 space-y-2"
-                        aria-label={`${step.title} outcomes`}
-                      >
-                        {step.points.map((pt) => (
-                          <li
-                            key={pt}
-                            className="flex gap-3 text-white/35 text-sm leading-relaxed"
-                          >
-                            <span
-                              className="flex-shrink-0 mt-0.5"
-                              style={{ color: 'rgba(10,140,255,0.50)' }}
-                              aria-hidden="true"
-                            >
-                              ·
-                            </span>
-                            {pt}
-                          </li>
-                        ))}
-                      </ul>
+                  <h3 className="text-white text-sm font-semibold mb-3 leading-snug">
+                    {step.title}
+                  </h3>
+                  <p className="text-white/55 text-sm leading-relaxed mb-5 flex-1">
+                    {step.description}
+                  </p>
+                  <div className="flex items-baseline gap-2 mt-auto">
+                    <span className="text-[9px] uppercase tracking-[0.15em] font-semibold text-white/50 flex-shrink-0">
+                      Output
+                    </span>
+                    <span className="text-white/50 text-xs leading-snug">{step.output}</span>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        {/* ── MOBILE (< lg): vertical progression ── */}
+        <motion.div
+          className="lg:hidden relative"
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-60px' }}
+        >
+          {/* Vertical connector line */}
+          <div
+            className="absolute w-px bg-white/[0.08]"
+            style={{ left: '14px', top: '14px', bottom: '14px' }}
+            aria-hidden="true"
+          />
+
+          <div className="flex flex-col">
+            {processSteps.map((step, i, arr) => {
+              const isLast = i === arr.length - 1
+              const isFeatured = i === 2
+              return (
+                <motion.div
+                  key={step.number}
+                  variants={fadeUp}
+                  className={`relative flex gap-5 ${isLast ? '' : 'pb-10'}`}
+                >
+                  {/* Circle */}
+                  <div
+                    className={`relative z-10 flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center border ${
+                      isFeatured ? 'border-[#0A8CFF]/45' : 'border-white/[0.12]'
+                    }`}
+                    style={{ background: '#020B14' }}
+                  >
+                    <span
+                      className={`text-[10px] font-mono font-bold ${
+                        isFeatured ? 'text-[#0A8CFF]' : 'text-[#0A8CFF]/55'
+                      }`}
+                      aria-hidden="true"
+                    >
+                      {step.number}
+                    </span>
+                  </div>
+
+                  {/* Content */}
+                  <div className="min-w-0 pb-1">
+                    <h3 className="text-white text-base font-semibold mb-2.5 leading-snug">
+                      {step.title}
+                    </h3>
+                    <p className="text-white/55 text-sm leading-relaxed mb-3.5">
+                      {step.description}
+                    </p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[9px] uppercase tracking-[0.15em] font-semibold text-white/50 flex-shrink-0">
+                        Output
+                      </span>
+                      <span className="text-white/50 text-xs">{step.output}</span>
                     </div>
                   </div>
                 </motion.div>
               )
             })}
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
 
       </div>
     </section>
