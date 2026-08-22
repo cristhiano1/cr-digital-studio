@@ -106,7 +106,7 @@ function BookingMockup() {
       </div>
 
       <div className="px-5 py-2 border-t border-white/05 flex items-center justify-end">
-        <span className="text-white/40 text-[10px]">Sample data — illustrative only</span>
+        <span className="text-white/50 text-[10px]">Sample data — illustrative only</span>
       </div>
     </div>
   )
