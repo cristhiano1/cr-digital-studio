@@ -34,7 +34,7 @@ function AutomationMockup() {
           { label: 'Active Flows', value: '5', color: '#168CFF' },
         ].map(({ label, value, color }) => (
           <div key={label} className="glass rounded-2xl p-3 flex flex-col gap-1">
-            <span className="text-white/40 text-xs leading-none">{label}</span>
+            <span className="text-white/50 text-xs leading-none">{label}</span>
             <span className="font-bold text-lg leading-none mt-1" style={{ color }}>{value}</span>
           </div>
         ))}
@@ -106,7 +106,7 @@ function AutomationMockup() {
       </div>
 
       <div className="px-5 py-2 border-t border-white/05 flex items-center justify-end">
-        <span className="text-white/40 text-[10px]">Sample data — illustrative only</span>
+        <span className="text-white/50 text-[10px]">Sample data — illustrative only</span>
       </div>
     </div>
   )

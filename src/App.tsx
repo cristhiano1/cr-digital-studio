@@ -7,6 +7,7 @@ import AboutPage from './pages/AboutPage'
 import QuoteLeadSystemsPage from './pages/QuoteLeadSystemsPage'
 import BusinessWebsitesPage from './pages/BusinessWebsitesPage'
 import BookingCustomerFlowsPage from './pages/BookingCustomerFlowsPage'
+import InternalSystemsAutomationPage from './pages/InternalSystemsAutomationPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ScrollToHash from './components/ScrollToHash'
 
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/solutions/quote-lead-systems" element={<QuoteLeadSystemsPage />} />
             <Route path="/solutions/business-websites" element={<BusinessWebsitesPage />} />
             <Route path="/solutions/booking-customer-flows" element={<BookingCustomerFlowsPage />} />
+            <Route path="/solutions/internal-systems-automation" element={<InternalSystemsAutomationPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
