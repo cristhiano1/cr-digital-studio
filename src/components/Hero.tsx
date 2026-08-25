@@ -38,7 +38,7 @@ export default function Hero() {
 
             <motion.h1
               {...fadeUp(0.34)}
-              className="font-bold leading-[1.02] tracking-[-0.045em] mb-6 text-[clamp(2.7rem,8.5vw,4.3rem)] sm:text-[clamp(3.2rem,6.6vw,5rem)] lg:text-[clamp(3.5rem,4.7vw,5.8rem)] xl:text-[clamp(3.8rem,4.2vw,6.2rem)]"
+              className="font-bold leading-[1.02] tracking-[-0.045em] mb-6 text-[clamp(2.5rem,9vw,3rem)] sm:text-[clamp(2.75rem,6.5vw,3.75rem)] lg:text-[clamp(3.75rem,5.8vw,4.25rem)] xl:text-[clamp(4.5rem,5.2vw,5rem)]"
             >
               <span className="text-white block">Websites and systems</span>
               <span className="shine-text block">built to move business forward.</span>
@@ -79,7 +79,7 @@ export default function Hero() {
               </a>
             </motion.div>
 
-            <motion.p {...fadeUp(0.9)} className="mt-7 text-xs sm:text-sm text-white/50 max-w-xl leading-relaxed">
+            <motion.p {...fadeUp(0.9)} className="mt-7 text-xs sm:text-sm text-white/55 max-w-xl leading-relaxed">
               Clear scope, direct communication and software designed around the way your business actually works.
             </motion.p>
           </div>

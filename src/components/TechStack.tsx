@@ -1,7 +1,11 @@
-import { motion } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { capabilities } from '../data/techStack'
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
+
+const EARTH_VIDEO_URL =
+  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260315_073750_51473149-4350-4920-ae24-c8214286f323.mp4'
 
 const container = {
   hidden: {},
@@ -14,21 +18,86 @@ const row = {
 }
 
 export default function TechStack() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const shouldReduceMotion = useReducedMotion()
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || shouldReduceMotion) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {})
+        } else {
+          video.pause()
+        }
+      },
+      { threshold: 0.1 },
+    )
+
+    observer.observe(video)
+    return () => observer.disconnect()
+  }, [shouldReduceMotion])
+
   return (
     <section
       id="tech-stack"
       className="relative py-28 bg-[#020C18] overflow-hidden"
       aria-label="Technical foundation"
     >
+      {/* Earth video background — progressive vertical fade via mask-image */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse 50% 45% at 80% 20%, rgba(10,140,255,0.06) 0%, transparent 100%)',
-        }}
+        className="absolute inset-0 overflow-hidden pointer-events-none"
         aria-hidden="true"
-      />
+        style={{
+          maskImage:
+            'linear-gradient(to bottom, black 0%, black 18%, rgba(0,0,0,0.68) 30%, rgba(0,0,0,0.36) 42%, rgba(0,0,0,0.10) 53%, transparent 62%)',
+          WebkitMaskImage:
+            'linear-gradient(to bottom, black 0%, black 18%, rgba(0,0,0,0.68) 30%, rgba(0,0,0,0.36) 42%, rgba(0,0,0,0.10) 53%, transparent 62%)',
+        }}
+      >
+        {!shouldReduceMotion && (
+          <video
+            ref={videoRef}
+            src={EARTH_VIDEO_URL}
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ opacity: 0.28, objectPosition: '70% 40%' }}
+          />
+        )}
 
+        {/* Left readability mask — protects text content */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(90deg, rgba(2,12,24,0.96) 0%, rgba(2,12,24,0.82) 28%, rgba(2,12,24,0.50) 50%, rgba(2,12,24,0.18) 72%, transparent 88%)',
+          }}
+        />
+
+        {/* Top blend */}
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#020C18] to-transparent" />
+
+        {/* Atmospheric haze */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: '8%',
+            right: '8%',
+            width: '40%',
+            height: '35%',
+            background:
+              'radial-gradient(ellipse at 50% 40%, rgba(100,206,251,0.05) 0%, transparent 70%)',
+          }}
+        />
+
+      </div>
+
+      {/* Existing content */}
       <div className="relative max-w-6xl mx-auto px-6">
 
         {/* Header */}

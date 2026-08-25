@@ -80,16 +80,8 @@ export default function FloatingMetricCards() {
       className="relative h-[420px] xl:h-[500px] pointer-events-none select-none"
       aria-hidden="true"
     >
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[330px] h-[330px] rounded-full opacity-30"
-        style={{
-          background:
-            'radial-gradient(circle, rgba(10,140,255,0.34) 0%, rgba(100,206,251,0.11) 42%, transparent 74%)',
-        }}
-      />
-
-      <div className="absolute top-[90px] left-[107px] w-px h-[130px] bg-gradient-to-b from-[#0A8CFF]/35 to-transparent" />
-      <div className="absolute top-[98px] right-[112px] w-px h-[145px] bg-gradient-to-b from-[#64CEFB]/30 to-transparent" />
+      <div className="absolute top-[90px] left-[107px] w-px h-[130px] bg-gradient-to-b from-[#0A8CFF]/25 to-transparent" />
+      <div className="absolute top-[98px] right-[112px] w-px h-[145px] bg-gradient-to-b from-[#64CEFB]/20 to-transparent" />
 
       {cards.map(({ icon, label, sub, color, delay, floatClass, posClass }) => (
         <motion.div
@@ -103,7 +95,6 @@ export default function FloatingMetricCards() {
         </motion.div>
       ))}
 
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110px] h-[110px] rounded-full border border-[#64CEFB]/10 bg-[#05111D]/45 backdrop-blur-sm shadow-[0_0_80px_rgba(10,140,255,0.12)]" />
     </motion.div>
   )
 }

@@ -22,108 +22,6 @@ import { useReducedMotion } from 'framer-motion'
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 const VIEW = { once: true, margin: '-80px' }
 
-function ConnectedGlobe() {
-  const shouldReduceMotion = useReducedMotion()
-  return (
-    <div
-      className="absolute pointer-events-none hidden sm:block"
-      style={{ bottom: '-12%', right: '-6%' }}
-      aria-hidden="true"
-    >
-      <div className="w-[320px] h-[320px] md:w-[420px] md:h-[420px] lg:w-[520px] lg:h-[520px] xl:w-[600px] xl:h-[600px] relative">
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: 'radial-gradient(circle at 50% 50%, rgba(10,140,255,0.08) 0%, rgba(10,140,255,0.03) 40%, transparent 70%)',
-          }}
-        />
-
-        <svg
-          viewBox="0 0 400 400"
-          className="w-full h-full animate-globe-slow"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <radialGradient id="globe-depth" cx="45%" cy="42%" r="50%">
-              <stop offset="0%" stopColor="white" stopOpacity="1" />
-              <stop offset="60%" stopColor="white" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="white" stopOpacity="0.15" />
-            </radialGradient>
-            <mask id="globe-mask">
-              <circle cx="200" cy="200" r="170" fill="url(#globe-depth)" />
-            </mask>
-            <clipPath id="globe-clip">
-              <circle cx="200" cy="200" r="170" />
-            </clipPath>
-          </defs>
-
-          <circle cx="200" cy="200" r="170" stroke="rgba(100,206,251,0.14)" strokeWidth="0.8" />
-
-          <g mask="url(#globe-mask)" clipPath="url(#globe-clip)">
-            <ellipse cx="200" cy="130" rx="155" ry="18" stroke="rgba(100,206,251,0.12)" strokeWidth="0.6" />
-            <ellipse cx="200" cy="200" rx="170" ry="24" stroke="rgba(100,206,251,0.18)" strokeWidth="0.7" />
-            <ellipse cx="200" cy="265" rx="148" ry="16" stroke="rgba(100,206,251,0.10)" strokeWidth="0.5" />
-            <ellipse cx="200" cy="320" rx="100" ry="10" stroke="rgba(100,206,251,0.07)" strokeWidth="0.4" />
-
-            <ellipse cx="200" cy="200" rx="170" ry="70" stroke="rgba(10,140,255,0.16)" strokeWidth="0.7" />
-            <ellipse cx="200" cy="200" rx="170" ry="70" stroke="rgba(10,140,255,0.13)" strokeWidth="0.6" transform="rotate(45 200 200)" />
-            <ellipse cx="200" cy="200" rx="170" ry="70" stroke="rgba(100,206,251,0.14)" strokeWidth="0.6" transform="rotate(90 200 200)" />
-            <ellipse cx="200" cy="200" rx="170" ry="70" stroke="rgba(10,140,255,0.10)" strokeWidth="0.5" transform="rotate(135 200 200)" />
-          </g>
-
-          <g clipPath="url(#globe-clip)">
-            <path d="M 140 120 Q 200 90 280 145" stroke="rgba(100,206,251,0.18)" strokeWidth="0.8" fill="none" />
-            <path d="M 280 145 Q 310 220 260 290" stroke="rgba(10,140,255,0.14)" strokeWidth="0.7" fill="none" />
-            <path d="M 120 230 Q 180 190 200 200" stroke="rgba(100,206,251,0.12)" strokeWidth="0.6" fill="none" />
-          </g>
-
-          {[
-            { cx: 140, cy: 120, r: 2.5, ringR: 7, bright: true },
-            { cx: 280, cy: 145, r: 2, ringR: 6, bright: true },
-            { cx: 260, cy: 290, r: 2, ringR: 6, bright: false },
-            { cx: 120, cy: 230, r: 1.8, ringR: 5.5, bright: false },
-          ].map((node, i) => (
-            <g key={i}>
-              <circle
-                cx={node.cx} cy={node.cy} r={node.ringR}
-                stroke={node.bright ? 'rgba(100,206,251,0.25)' : 'rgba(100,206,251,0.12)'}
-                strokeWidth="0.5"
-                fill="none"
-              />
-              <circle
-                cx={node.cx} cy={node.cy} r={node.r}
-                fill={node.bright ? '#64CEFB' : 'rgba(100,206,251,0.5)'}
-                opacity={node.bright ? 0.7 : 0.4}
-              />
-            </g>
-          ))}
-
-          <line
-            x1="60" y1="200" x2="30" y2="200"
-            stroke="rgba(100,206,251,0.06)"
-            strokeWidth="0.5"
-            strokeDasharray="4 6"
-          />
-        </svg>
-
-        {!shouldReduceMotion && (
-          <>
-            <div
-              className="absolute rounded-full animate-globe-signal-1"
-              style={{ width: '4px', height: '4px', background: '#64CEFB', filter: 'blur(0.5px)' }}
-            />
-            <div
-              className="absolute rounded-full animate-globe-signal-2"
-              style={{ width: '3px', height: '3px', background: '#0A8CFF', filter: 'blur(0.5px)' }}
-            />
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
-
 function SignalPulses() {
   const shouldReduceMotion = useReducedMotion()
   return (
@@ -354,7 +252,6 @@ function Hero() {
       aria-label="Internal Systems and Automation overview"
     >
       <AutomationBackground />
-      <ConnectedGlobe />
 
       <div className="relative max-w-6xl mx-auto px-6">
         <motion.div
