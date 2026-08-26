@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { Check, ArrowRight, ArrowLeft } from 'lucide-react'
 import { BusinessWebsiteMockup, BusinessWebsiteBackground } from '../components/projects/BusinessWebsiteDemo'
 import SolutionAccordion from '../components/SolutionAccordion'
+import PageMeta from '../components/PageMeta'
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 
@@ -721,6 +722,7 @@ function FinalCTA() {
 export default function BusinessWebsitesPage() {
   return (
     <>
+      <PageMeta route="/solutions/business-websites" />
       <Hero />
       <Problem />
       <Capabilities />

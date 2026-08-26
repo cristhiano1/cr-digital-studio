@@ -1,8 +1,10 @@
 import { Link } from 'react-router'
+import PageMeta from '../components/PageMeta'
 
 export default function NotFoundPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
+      <PageMeta route="404" />
       <p className="text-[#64CEFB] text-sm font-mono tracking-widest uppercase mb-3">404</p>
       <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">Page not found</h1>
       <p className="text-white/50 text-sm mb-8 max-w-md">

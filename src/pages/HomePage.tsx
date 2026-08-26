@@ -1,3 +1,4 @@
+import PageMeta from '../components/PageMeta'
 import Hero from '../components/Hero'
 import Services from '../components/Services'
 import FeaturedProject from '../components/FeaturedProject'
@@ -10,6 +11,7 @@ import Contact from '../components/Contact'
 export default function HomePage() {
   return (
     <>
+      <PageMeta route="/" />
       <Hero />
       <Services />
       <FeaturedProject />

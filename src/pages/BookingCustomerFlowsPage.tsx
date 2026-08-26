@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router'
+import PageMeta from '../components/PageMeta'
 import {
   ArrowLeft,
   ArrowRight,
@@ -852,6 +853,7 @@ function FinalCTA() {
 export default function BookingCustomerFlowsPage() {
   return (
     <>
+      <PageMeta route="/solutions/booking-customer-flows" />
       <Hero />
       <Problem />
       <BookingFlowSection />

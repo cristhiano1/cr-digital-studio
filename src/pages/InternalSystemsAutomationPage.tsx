@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router'
+import PageMeta from '../components/PageMeta'
 import {
   ArrowLeft,
   ArrowRight,
@@ -984,6 +985,7 @@ function FinalCTA() {
 export default function InternalSystemsAutomationPage() {
   return (
     <>
+      <PageMeta route="/solutions/internal-systems-automation" />
       <Hero />
       <Problem />
       <Capabilities />

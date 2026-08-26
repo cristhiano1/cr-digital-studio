@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { Check, ArrowRight, ArrowLeft } from 'lucide-react'
 import { QuoteLeadMockup, QuoteLeadBackground } from '../components/projects/QuoteLeadDemo'
 import { solutions } from '../data/services'
+import PageMeta from '../components/PageMeta'
 import SolutionAccordion from '../components/SolutionAccordion'
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
@@ -791,6 +792,7 @@ function FinalCTA() {
 export default function QuoteLeadSystemsPage() {
   return (
     <>
+      <PageMeta route="/solutions/quote-lead-systems" />
       <Hero />
       <Problem />
       <Capabilities />

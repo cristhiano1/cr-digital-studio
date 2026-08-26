@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { motion } from 'framer-motion'
+import PageMeta from '../components/PageMeta'
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 
@@ -55,6 +56,7 @@ const LINKEDIN_URL = 'https://www.linkedin.com/in/cristhian-rodriguez-rodrgo-280
 export default function AboutPage() {
   return (
     <div className="bg-[#020B14]">
+      <PageMeta route="/about" />
 
       {/* 1. Hero */}
       <section
