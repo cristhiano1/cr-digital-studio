@@ -32,6 +32,11 @@
       "description": "Internal systems and workflow automation designed to reduce repetitive operational tasks, improve visibility across teams and connect existing business tools.",
       "robots": "index, follow"
     },
+    "/privacy": {
+      "title": "Privacy Policy",
+      "description": "How CR Digital Systems collects, uses and protects the information you provide through the contact form on this site.",
+      "robots": "index, follow"
+    },
     "404": {
       "title": "Page Not Found",
       "description": "The page you are looking for does not exist or has been moved.",

@@ -92,9 +92,17 @@ export default function Footer() {
           <p className="text-white/35 text-xs">
             &copy; {new Date().getFullYear()} CR Digital Systems. All rights reserved.
           </p>
-          <p className="text-white/25 text-xs">
-            Built by CR Digital Systems
-          </p>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/privacy"
+              className="text-white/25 hover:text-white/45 text-xs transition-colors duration-200"
+            >
+              Privacy
+            </Link>
+            <p className="text-white/25 text-xs">
+              Built by CR Digital Systems
+            </p>
+          </div>
         </div>
       </div>
     </footer>

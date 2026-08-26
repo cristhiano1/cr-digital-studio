@@ -1,7 +1,9 @@
-import { useState, type FormEvent, type ChangeEvent } from 'react'
+import { useState, useRef, useCallback, type FormEvent, type ChangeEvent } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle, AlertCircle } from 'lucide-react'
+import { Link } from 'react-router'
 import { submitContactForm, type ContactFormData } from '../lib/contact'
+import TurnstileWidget, { type TurnstileWidgetHandle } from './TurnstileWidget'
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 
@@ -45,6 +47,8 @@ function clientValidate(form: ContactFormData): string | null {
     return 'Please describe the current challenge (at least 10 characters).'
   if (!form.consent)
     return 'Please confirm you agree before submitting.'
+  if (import.meta.env.VITE_TURNSTILE_SITE_KEY && !form.turnstileToken)
+    return 'Please complete the security check and try again.'
   return null
 }
 
@@ -57,6 +61,7 @@ export default function Contact() {
   const [form, setForm] = useState<ContactFormData>(initialForm)
   const [status, setStatus] = useState<FormStatus>('idle')
   const [statusMessage, setStatusMessage] = useState('')
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null)
 
   const set =
     (field: keyof ContactFormData) =>
@@ -65,6 +70,19 @@ export default function Contact() {
 
   const setConsent = (e: ChangeEvent<HTMLInputElement>) =>
     setForm((prev) => ({ ...prev, consent: e.target.checked }))
+
+  /* ── Turnstile callbacks ──────────────────────────────────────────────── */
+  const handleTurnstileSuccess = useCallback((token: string) => {
+    setForm((prev) => ({ ...prev, turnstileToken: token }))
+  }, [])
+
+  const handleTurnstileExpired = useCallback(() => {
+    setForm((prev) => ({ ...prev, turnstileToken: undefined }))
+  }, [])
+
+  const handleTurnstileError = useCallback(() => {
+    setForm((prev) => ({ ...prev, turnstileToken: undefined }))
+  }, [])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -81,9 +99,11 @@ export default function Contact() {
       setStatus('success')
       setStatusMessage(result.message)
       setForm(initialForm)
+      turnstileRef.current?.reset()
     } else {
       setStatus('error')
       setStatusMessage(result.message)
+      turnstileRef.current?.reset()
     }
   }
 
@@ -217,6 +237,7 @@ export default function Contact() {
                   onClick={() => {
                     setStatus('idle')
                     setStatusMessage('')
+                    turnstileRef.current?.reset()
                   }}
                   className="text-[#0A8CFF] text-sm hover:underline"
                 >
@@ -429,10 +450,24 @@ export default function Contact() {
                   </span>
                 </label>
 
+                {/* Turnstile anti-spam widget */}
+                <TurnstileWidget
+                  ref={turnstileRef}
+                  onSuccess={handleTurnstileSuccess}
+                  onExpired={handleTurnstileExpired}
+                  onError={handleTurnstileError}
+                />
+
                 {/* Privacy note + submit */}
                 <div className="pt-1 space-y-4">
                   <p className="text-white/30 text-xs leading-relaxed">
-                    Your details are used only to review and respond to this enquiry.
+                    Your details are used only to review and respond to this enquiry.{' '}
+                    <Link
+                      to="/privacy"
+                      className="underline hover:text-white/45 transition-colors duration-200"
+                    >
+                      Privacy policy
+                    </Link>
                   </p>
                   <button
                     type="submit"
