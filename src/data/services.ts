@@ -8,6 +8,7 @@ export interface Solution {
   description: string
   capabilities: string[]
   accent: string
+  route: string
 }
 
 export const solutions: Solution[] = [
@@ -16,45 +17,48 @@ export const solutions: Solution[] = [
     icon: Globe,
     title: 'Business Websites',
     description:
-      'Clear, well-structured websites that show what you do, how to get in touch and why someone should choose you — built so your team can update content without a developer.',
+      'Clear, well-structured business websites built around what customers need to understand and do next — designed to be maintainable by your team.',
     capabilities: [
-      'Fast on mobile and desktop',
-      'Local SEO foundations built in',
-      'Contact and enquiry forms that notify your team',
-      'Visitor tracking so you know what is working',
-      'Pages and copy your team can edit directly',
+      'Clear service and offer structure',
+      'Fast and responsive on every device',
+      'Enquiry and contact paths that reach your team',
+      'Content your team can update directly',
+      'Built on maintainable technical foundations',
     ],
     accent: '#0A8CFF',
+    route: '/solutions/business-websites',
   },
   {
     id: 'quotes-leads',
     icon: ClipboardList,
     title: 'Quote & Lead Systems',
     description:
-      'Capture enquiries, qualify leads and follow up automatically so nothing falls through the cracks.',
+      'Capture enquiries with structured forms, organise lead information clearly and keep follow-up visible so nothing falls through the cracks.',
     capabilities: [
-      'Multi-step quote request forms',
-      'Enquiries sorted by service, budget or urgency',
-      'Automatic follow-up emails when leads go quiet',
-      'Pipeline view so you see every open enquiry',
-      'Notifications routed to the right person',
+      'Structured quote and enquiry forms',
+      'Lead information organised clearly',
+      'Follow-up workflow visibility',
+      'Routing and notifications where useful',
+      'Integration with existing tools where appropriate',
     ],
     accent: '#64CEFB',
+    route: '/solutions/quote-lead-systems',
   },
   {
     id: 'booking-flows',
     icon: CalendarCheck2,
     title: 'Booking & Customer Flows',
     description:
-      'Let customers book, pay and manage appointments online while your team stays in control of availability.',
+      'Let customers check availability, book online and manage their own appointments while your team stays in control.',
     capabilities: [
-      'Customers pick a time and book themselves',
-      'Reminders sent automatically before each appointment',
-      'Portal where customers check or change bookings',
-      'Payment collected at booking or on the day',
-      'Calendar sync so double-bookings don’t happen',
+      'Customers choose available times',
+      'Booking details captured clearly',
+      'Confirmations and reminders where required',
+      'Rescheduling and cancellation flows',
+      'Calendar and tool connections where appropriate',
     ],
     accent: '#168CFF',
+    route: '/solutions/booking-customer-flows',
   },
   {
     id: 'internal-systems',
@@ -63,12 +67,13 @@ export const solutions: Solution[] = [
     description:
       'Replace spreadsheets, manual steps and scattered tools with clean internal software your team actually uses.',
     capabilities: [
-      'Admin panels where each role sees only what they need',
-      'Repetitive steps handled without manual input',
-      'Dashboards that show what matters, not everything',
-      'Data pulled from the tools you already use',
-      'AI for tagging, summaries and triage — human-reviewed',
+      'Internal admin and workflow tools',
+      'Repetitive steps reduced where practical',
+      'Clear status and operational views',
+      'Data connected from existing tools',
+      'Automation and integrations based on real workflow needs',
     ],
     accent: '#64CEFB',
+    route: '/solutions/internal-systems-automation',
   },
 ]

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Link } from 'react-router'
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 import { QuoteLeadMockup } from './projects/QuoteLeadDemo'
 import { BookingMockup } from './projects/BookingDemo'
 import { FieldServiceMockup } from './projects/FieldServiceDemo'
@@ -20,6 +21,7 @@ interface ProjectMeta {
   accentColor: string
   videoSrc?: string
   videoPoster?: string
+  solutionRoute?: string
 }
 
 const PROJECTS: ProjectMeta[] = [
@@ -40,6 +42,7 @@ const PROJECTS: ProjectMeta[] = [
       'Reduce missed enquiries',
     ],
     accentColor: '#0A8CFF',
+    solutionRoute: '/solutions/quote-lead-systems',
   },
   {
     number: '02',
@@ -57,6 +60,7 @@ const PROJECTS: ProjectMeta[] = [
       'Works outside business hours',
     ],
     accentColor: '#64CEFB',
+    solutionRoute: '/solutions/booking-customer-flows',
   },
   {
     number: '03',
@@ -92,6 +96,7 @@ const PROJECTS: ProjectMeta[] = [
       'Reduced admin load',
     ],
     accentColor: '#0A8CFF',
+    solutionRoute: '/solutions/internal-systems-automation',
   },
 ]
 
@@ -278,16 +283,30 @@ export default function FeaturedProject() {
                   </p>
                 )}
 
-                <a
-                  href="#contact"
-                  className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full text-white transition-all duration-200 hover:-translate-y-0.5 motion-reduce:transform-none"
-                  style={{
-                    background: active.accentColor,
-                    boxShadow: `0 4px 16px ${active.accentColor}30`,
-                  }}
-                >
-                  Request Similar System
-                </a>
+                {active.solutionRoute ? (
+                  <Link
+                    to={active.solutionRoute}
+                    className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full text-white transition-all duration-200 hover:-translate-y-0.5 motion-reduce:transform-none"
+                    style={{
+                      background: active.accentColor,
+                      boxShadow: `0 4px 16px ${active.accentColor}30`,
+                    }}
+                  >
+                    Explore this solution
+                    <ArrowRight size={14} aria-hidden="true" />
+                  </Link>
+                ) : (
+                  <a
+                    href="#contact"
+                    className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full text-white transition-all duration-200 hover:-translate-y-0.5 motion-reduce:transform-none"
+                    style={{
+                      background: active.accentColor,
+                      boxShadow: `0 4px 16px ${active.accentColor}30`,
+                    }}
+                  >
+                    Request Similar System
+                  </a>
+                )}
               </div>
             </motion.div>
 

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { Check } from 'lucide-react'
+import { Check, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router'
 import { solutions } from '../data/services'
 import type { Solution } from '../data/services'
 
@@ -146,6 +147,15 @@ function SolutionCard({ solution }: { solution: Solution }) {
             </li>
           ))}
         </ul>
+
+        <Link
+          to={solution.route}
+          className="inline-flex items-center gap-1.5 text-sm font-medium mt-6 transition-colors duration-200 hover:brightness-125"
+          style={{ color: accent }}
+        >
+          Explore solution
+          <ArrowRight size={14} aria-hidden="true" />
+        </Link>
       </div>
     </motion.div>
   )
