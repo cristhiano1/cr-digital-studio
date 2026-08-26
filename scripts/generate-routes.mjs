@@ -138,3 +138,38 @@ for (const [routeKey, meta] of Object.entries(routeMeta.routes)) {
 }
 
 console.log(`\n✓ Generated ${count} static route files`)
+
+/* ── Generate robots.txt ───────────────────────────────────────── */
+const robotsTxt = [
+  'User-agent: *',
+  'Allow: /',
+  '',
+  `Sitemap: ${routeMeta.canonicalBase}/sitemap.xml`,
+  '',
+].join('\n')
+
+writeFileSync(join(distDir, 'robots.txt'), robotsTxt, 'utf-8')
+console.log('✓ Generated robots.txt')
+
+/* ── Generate sitemap.xml ──────────────────────────────────────── */
+const indexableRoutes = Object.entries(routeMeta.routes)
+  .filter(([, meta]) => !meta.robots.includes('noindex'))
+  .map(([path]) => path)
+
+const sitemapUrls = indexableRoutes
+  .map(
+    (path) =>
+      `  <url>\n    <loc>${routeMeta.canonicalBase}${path === '/' ? '/' : path}</loc>\n  </url>`
+  )
+  .join('\n')
+
+const sitemapXml = [
+  '<?xml version="1.0" encoding="UTF-8"?>',
+  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+  sitemapUrls,
+  '</urlset>',
+  '',
+].join('\n')
+
+writeFileSync(join(distDir, 'sitemap.xml'), sitemapXml, 'utf-8')
+console.log(`✓ Generated sitemap.xml (${indexableRoutes.length} URLs)`)
