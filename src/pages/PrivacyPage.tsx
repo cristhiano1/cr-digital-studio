@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { motion } from 'framer-motion'
 import PageMeta from '../components/PageMeta'
+import routeMeta from '../data/routeMeta.json'
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 
@@ -50,7 +51,7 @@ export default function PrivacyPage() {
               <h2 className={headingClass}>Overview</h2>
               <p className={textClass}>
                 CR Digital Systems ("we", "us") operates the website at{' '}
-                <span className="text-white/60">cr-digital-studio.netlify.app</span>.
+                <span className="text-white/60">{routeMeta.canonicalBase.replace(/^https?:\/\//, '')}</span>.
                 This policy describes what information is collected when you use this
                 site, why it is collected, and how it is handled.
               </p>
@@ -118,12 +119,11 @@ export default function PrivacyPage() {
                   signals to distinguish genuine visitors from automated traffic. The
                   challenge token is verified server-side and is not stored.
                 </li>
-                <li>
-                  <span className="text-white/60">Google Fonts</span> — Font files
-                  are loaded from Google servers. Google may receive your IP address
-                  and browser information as part of this request.
-                </li>
               </ul>
+              <p className={textClass + ' mt-3'}>
+                This site uses the Inter typeface, which is bundled with and served
+                directly by the site itself. No external font service is contacted.
+              </p>
             </div>
 
             {/* ── Cookies ──────────────────────────────────────────────── */}

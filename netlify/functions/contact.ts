@@ -112,8 +112,9 @@ async function sendResendNotification(params: {
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export const handler: Handler = async (event) => {
+  const allowedOrigin = process.env.SITE_ORIGIN || '*'
   const headers: Record<string, string> = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json',
   }

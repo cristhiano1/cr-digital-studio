@@ -34,21 +34,23 @@ const initialForm: ContactFormData = {
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 
-function clientValidate(form: ContactFormData): string | null {
+interface ValidationError { message: string; field: string | null }
+
+function clientValidate(form: ContactFormData): ValidationError | null {
   if (form.name.trim().length < 2)
-    return 'Please enter your name (at least 2 characters).'
+    return { message: 'Please enter your name (at least 2 characters).', field: 'cf-name' }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
-    return 'Please enter a valid email address.'
+    return { message: 'Please enter a valid email address.', field: 'cf-email' }
   if (!form.business.trim())
-    return 'Please enter your business or company name.'
+    return { message: 'Please enter your business or company name.', field: 'cf-business' }
   if (!form.helpWith)
-    return 'Please select what you need help with.'
+    return { message: 'Please select what you need help with.', field: 'cf-help' }
   if (form.challenge.trim().length < 10)
-    return 'Please describe the current challenge (at least 10 characters).'
+    return { message: 'Please describe the current challenge (at least 10 characters).', field: 'cf-challenge' }
   if (!form.consent)
-    return 'Please confirm you agree before submitting.'
+    return { message: 'Please confirm you agree before submitting.', field: 'cf-consent' }
   if (import.meta.env.VITE_TURNSTILE_SITE_KEY && !form.turnstileToken)
-    return 'Please complete the security check and try again.'
+    return { message: 'Please complete the security check and try again.', field: null }
   return null
 }
 
@@ -61,15 +63,25 @@ export default function Contact() {
   const [form, setForm] = useState<ContactFormData>(initialForm)
   const [status, setStatus] = useState<FormStatus>('idle')
   const [statusMessage, setStatusMessage] = useState('')
+  const [errorField, setErrorField] = useState<string | null>(null)
   const turnstileRef = useRef<TurnstileWidgetHandle>(null)
+
+  const fieldIds: Record<string, string> = {
+    name: 'cf-name', email: 'cf-email', business: 'cf-business',
+    helpWith: 'cf-help', challenge: 'cf-challenge',
+  }
 
   const set =
     (field: keyof ContactFormData) =>
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }))
+      if (errorField && errorField === fieldIds[field]) setErrorField(null)
+    }
 
-  const setConsent = (e: ChangeEvent<HTMLInputElement>) =>
+  const setConsent = (e: ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, consent: e.target.checked }))
+    if (errorField === 'cf-consent') setErrorField(null)
+  }
 
   /* ── Turnstile callbacks ──────────────────────────────────────────────── */
   const handleTurnstileSuccess = useCallback((token: string) => {
@@ -89,20 +101,25 @@ export default function Contact() {
     const error = clientValidate(form)
     if (error) {
       setStatus('error')
-      setStatusMessage(error)
+      setStatusMessage(error.message)
+      setErrorField(error.field)
+      if (error.field) document.getElementById(error.field)?.focus()
       return
     }
     setStatus('loading')
     setStatusMessage('')
+    setErrorField(null)
     const result = await submitContactForm(form)
     if (result.success) {
       setStatus('success')
       setStatusMessage(result.message)
       setForm(initialForm)
+      setErrorField(null)
       turnstileRef.current?.reset()
     } else {
       setStatus('error')
       setStatusMessage(result.message)
+      setErrorField(null)
       turnstileRef.current?.reset()
     }
   }
@@ -259,6 +276,7 @@ export default function Contact() {
                 {/* Error banner */}
                 {status === 'error' && (
                   <div
+                    id="cf-error"
                     role="alert"
                     className="flex items-start gap-3 p-4 rounded-xl"
                     style={{
@@ -295,6 +313,8 @@ export default function Contact() {
                       autoComplete="name"
                       required
                       aria-required="true"
+                      aria-invalid={errorField === 'cf-name' || undefined}
+                      aria-describedby={errorField === 'cf-name' ? 'cf-error' : undefined}
                       placeholder="Your name"
                       className={inputClass}
                     />
@@ -317,6 +337,8 @@ export default function Contact() {
                       autoComplete="email"
                       required
                       aria-required="true"
+                      aria-invalid={errorField === 'cf-email' || undefined}
+                      aria-describedby={errorField === 'cf-email' ? 'cf-error' : undefined}
                       placeholder="you@company.com"
                       className={inputClass}
                     />
@@ -343,6 +365,8 @@ export default function Contact() {
                       autoComplete="organization"
                       required
                       aria-required="true"
+                      aria-invalid={errorField === 'cf-business' || undefined}
+                      aria-describedby={errorField === 'cf-business' ? 'cf-error' : undefined}
                       placeholder="Company name"
                       className={inputClass}
                     />
@@ -363,6 +387,8 @@ export default function Contact() {
                       onChange={set('helpWith')}
                       required
                       aria-required="true"
+                      aria-invalid={errorField === 'cf-help' || undefined}
+                      aria-describedby={errorField === 'cf-help' ? 'cf-error' : undefined}
                       className={inputClass + ' appearance-none cursor-pointer'}
                       style={{
                         color: form.helpWith ? '#fff' : 'rgba(255,255,255,0.25)',
@@ -405,6 +431,8 @@ export default function Contact() {
                     onChange={set('challenge')}
                     required
                     aria-required="true"
+                    aria-invalid={errorField === 'cf-challenge' || undefined}
+                    aria-describedby={errorField === 'cf-challenge' ? 'cf-error' : undefined}
                     rows={5}
                     placeholder="Tell us what currently happens, what is manual, or where customers or team members get stuck."
                     className={inputClass + ' resize-none'}
@@ -442,6 +470,8 @@ export default function Contact() {
                     onChange={setConsent}
                     required
                     aria-required="true"
+                    aria-invalid={errorField === 'cf-consent' || undefined}
+                    aria-describedby={errorField === 'cf-consent' ? 'cf-error' : undefined}
                     className="mt-0.5 w-4 h-4 flex-shrink-0 accent-[#0A8CFF] cursor-pointer"
                   />
                   <span className="text-white/45 text-xs leading-relaxed select-none group-hover:text-white/55 transition-colors">
